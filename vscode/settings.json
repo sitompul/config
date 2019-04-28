@@ -1,0 +1,27 @@
+{
+  "window.menuBarVisibility": "toggle",
+  "workbench.statusBar.visible": false,
+  "editor.minimap.enabled": false,
+  "workbench.colorTheme": "One Dark Pro",
+  "window.zoomLevel": 0,
+  "editor.fontSize": 12,
+  "editor.fontFamily": "Fira Code",
+  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+  "editor.tabSize": 2,
+  "editor.fontLigatures": true,
+  "editor.suggestSelection": "first",
+  "breadcrumbs.enabled": true,
+  "files.associations": {
+      "*.toml": "toml"
+  },
+  "java.configuration.checkProjectSettingsExclusions": false,
+  "workbench.editor.showTabs": true,
+  "macros": {
+      "toggleSidebar": [
+          "workbench.action.toggleActivityBarVisibility",
+          "workbench.action.toggleSidebarVisibility"
+      ]
+  },
+  "workbench.activityBar.visible": true,
+  "workbench.iconTheme": "material-icon-theme"
+}
