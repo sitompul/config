@@ -1,27 +1,23 @@
 {
-  "window.menuBarVisibility": "toggle",
-  "workbench.statusBar.visible": false,
-  "editor.minimap.enabled": false,
-  "workbench.colorTheme": "One Dark Pro",
-  "window.zoomLevel": 0,
-  "editor.fontSize": 12,
-  "editor.fontFamily": "Fira Code",
-  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-  "editor.tabSize": 2,
-  "editor.fontLigatures": true,
-  "editor.suggestSelection": "first",
-  "breadcrumbs.enabled": true,
-  "files.associations": {
-      "*.toml": "toml"
-  },
-  "java.configuration.checkProjectSettingsExclusions": false,
-  "workbench.editor.showTabs": true,
-  "macros": {
-      "toggleSidebar": [
-          "workbench.action.toggleActivityBarVisibility",
-          "workbench.action.toggleSidebarVisibility"
-      ]
-  },
-  "workbench.activityBar.visible": true,
-  "workbench.iconTheme": "material-icon-theme"
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.colorTheme": "One Dark Pro",
+    "workbench.activityBar.visible": false,
+    "workbench.statusBar.visible": false,
+    "editor.minimap.enabled": false,
+    "editor.fontLigatures": true,
+    "editor.tabSize": 2,
+    "editor.glyphMargin": false,
+    "editor.rulers": [
+        120
+    ],
+    "breadcrumbs.enabled": true,
+    "editor.fontFamily": "Fira Code",
+    "window.zoomLevel": 0,
+    "files.associations": {
+        "*.tmpl": "gohtml",
+        "*.tpl": "gohtml"
+    },
+    "[gohtml]": {},
+    "workbench.sideBar.location": "left",
+    "go.formatTool": "gofmt"
 }
