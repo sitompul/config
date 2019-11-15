@@ -1,37 +1,18 @@
 {
-    "workbench.iconTheme": "material-icon-theme",
-    "workbench.colorTheme": "Atom Material Theme",
+    "telemetry.enableCrashReporter": false,
+    "telemetry.enableTelemetry": false,
     "workbench.statusBar.visible": false,
-    "editor.minimap.enabled": false,
-    "editor.fontLigatures": true,
-    "editor.tabSize": 2,
-    "editor.rulers": [
-        80
-    ],
-    "breadcrumbs.enabled": true,
-    "editor.fontFamily": "Fira Code",
-    "window.zoomLevel": -1,
-    "files.associations": {
-        "*.tmpl": "gohtml",
-        "*.tpl": "gohtml"
-    },
-    "workbench.sideBar.location": "left",
-    "go.formatTool": "gofmt",
     "window.menuBarVisibility": "toggle",
-    "vs-kubernetes": {
-        "vs-kubernetes.helm-path": "/home/odium/.vs-kubernetes/tools/helm/linux-amd64/helm",
-        "vs-kubernetes.minikube-path": "/home/odium/.vs-kubernetes/tools/minikube/linux-amd64/minikube"
-    },
-    "workbench.colorCustomizations": {
-        "scrollbarSlider.background": "#555555",
-        "sideBar.background": "#111111",
-        "editor.background": "#111111",
-        "activityBar.background": "#111111",
-        "editorGroupHeader.tabsBackground" : "#111111",
-        "editorGroup.border": "#222222",
-        "editor.lineHighlightBackground": "#212121",
-        "tab.activeBackground": "#222222",
-        "tab.inactiveBackground": "#111111",
-    },
-    "go.useLanguageServer": true
+    "editor.minimap.enabled": false,
+    "editor.fontFamily": "Fira Code Retina",
+    "editor.tabSize": 2,
+    "editor.fontLigatures": true,
+    "workbench.activityBar.visible": false,
+    "editor.rulers": [120],
+    "window.zoomLevel": 0,
+    "workbench.colorTheme": "Dracula",
+    "editor.fontSize": 12,
+    "go.formatTool": "goimports",
+    "go.useLanguageServer": true,
+    "terminal.integrated.fontSize": 12
 }
