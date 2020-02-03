@@ -7,12 +7,21 @@
     "editor.fontFamily": "Fira Code Retina",
     "editor.tabSize": 2,
     "editor.fontLigatures": true,
-    "workbench.activityBar.visible": false,
+    "workbench.activityBar.visible": true,
     "editor.rulers": [120],
     "window.zoomLevel": 0,
-    "workbench.colorTheme": "Dracula",
     "editor.fontSize": 12,
     "go.formatTool": "goimports",
     "go.useLanguageServer": true,
-    "terminal.integrated.fontSize": 12
+    "terminal.integrated.fontSize": 12,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "vs-kubernetes": {
+        "vs-kubernetes.minikube-path": "/home/odin/.vs-kubernetes/tools/minikube/linux-amd64/minikube"
+    },
+    "workbench.colorTheme": "Dracula At Night",
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#0e1419",
+        "tab.activeBackground": "#0e1419",
+        "tab.activeBorder": "#0e1419"
+    }
 }
