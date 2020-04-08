@@ -1,3 +1,7 @@
+set nocompatible
+filetype off
+
+colorscheme industry
 set number
 set linebreak
 set showbreak=+++
@@ -21,8 +25,16 @@ set ruler
 set undolevels=1000
 set backspace=indent,eol,start
 
-colorscheme elflord
+" Plugins
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'jiangmiao/auto-pairs'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'tpope/vim-commentary'
+Plugin 'wincent/terminus'
+nnoremap tn :tabnew<CR>
+call vundle#end()    
+filetype plugin indent on
 
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
-
-execute pathogen#infect()
