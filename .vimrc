@@ -1,6 +1,7 @@
 set nocompatible
 filetype off
 
+syntax enable
 colorscheme industry
 set number
 set linebreak
@@ -9,6 +10,9 @@ set textwidth=100
 set showmatch
 set visualbell
 set mouse=a
+
+set ttyfast
+set lazyredraw
 
 set hlsearch
 set smartcase
