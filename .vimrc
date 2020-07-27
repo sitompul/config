@@ -34,15 +34,23 @@ call vundle#begin()
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'jiangmiao/auto-pairs'
 Plugin 'leafgarland/typescript-vim'
+Plugin 'peitalin/vim-jsx-typescript'
+Plugin 'dart-lang/dart-vim-plugin'
+Plugin 'thosakwe/vim-flutter'
 Plugin 'tpope/vim-commentary'
 Plugin 'wincent/terminus'
 Plugin 'dyng/ctrlsf.vim'
 Plugin 'preservim/nerdtree'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 nnoremap tn :tabnew<CR>
 map <C-n> :NERDTreeToggle<CR>
 call vundle#end()    
 filetype plugin indent on
 
+" Language server for flutter
+let g:lsc_auto_map = v:true
+autocmd BufNewFile,BufRead *.tsx,*.jsx set filetype=typescript.tsx
 " CtrlP configuration
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 
