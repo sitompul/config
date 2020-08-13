@@ -2,7 +2,7 @@ set nocompatible
 filetype off
 
 syntax enable
-set number relativenumber
+set number
 set linebreak
 set textwidth=100
 set showmatch
@@ -32,10 +32,8 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
 Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'jiangmiao/auto-pairs'
 Plugin 'tpope/vim-commentary'
 Plugin 'dyng/ctrlsf.vim'
-Plugin 'vim-airline/vim-airline'
 
 " Language support.
 Plugin 'dart-lang/dart-vim-plugin'
