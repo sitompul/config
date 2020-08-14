@@ -1,7 +1,7 @@
 // Place your key bindings in this file to override the defaults
 [
   {
-    "key": "cmd+ctrl+b",
+    "key": "alt+ctrl+b",
     "command": "workbench.action.toggleActivityBarVisibility"
   },
   {
@@ -17,7 +17,11 @@
     "command": "workbench.action.toggleEditorWidths"
   },
   {
-    "key": "ctrl+shift+c",
+    "key": "ctrl+shift+b",
     "command": "editor.debug.action.goToNextBreakpoint"
+  },
+  {
+    "key": "ctrl+shift+c",
+    "command": "workbench.debug.viewlet.action.removeAllBreakpoints"
   }
 ]
