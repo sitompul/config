@@ -1,3 +1,4 @@
+" Vim Configuration
 set nocompatible
 filetype off
 
@@ -15,7 +16,7 @@ set ignorecase
 set incsearch
 
 set ttyfast
-set lazyredraw 
+set lazyredraw
 
 set autoindent
 set shiftwidth=2
@@ -23,34 +24,41 @@ set smartindent
 set smarttab
 set softtabstop=4
 set background=dark
-set ruler
 set undolevels=1000
 set backspace=indent,eol,start
+hi Pmenu ctermbg=black ctermfg=white
 
-" Plugins
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+" Plugin List
+call plug#begin('~/.vim/plugged')
 
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'tpope/vim-commentary'
-Plugin 'dyng/ctrlsf.vim'
+Plug 'sheerun/vim-polyglot'
+Plug 'junegunn/fzf'
+Plug 'tpope/vim-surround'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'vim-airline/vim-airline'
+Plug 'dyng/ctrlsf.vim'
+Plug 'mg979/vim-visual-multi', {'branch': 'master'}
+Plug 'jiangmiao/auto-pairs'
+Plug 'alvan/vim-closetag'
+Plug 'scrooloose/nerdcommenter'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-fugitive'
 
-" Language support.
-Plugin 'dart-lang/dart-vim-plugin'
-Plugin 'thosakwe/vim-flutter'
-Plugin 'peitalin/vim-jsx-typescript'
+call plug#end()
 
-nnoremap tn :tabnew<CR>
-call vundle#end()    
-filetype plugin indent on
+"vim-closetag configuration
+let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.tsx,*.jsx'
+let g:closetag_xhtml_filenames = '*.xhtml,*.tsx,*.xml,*.jsx'
+let g:closetag_emptyTags_caseSensitive = 1
+let g:closetag_regions = {
+    \ 'typescript.tsx': 'jsxRegion,tsxRegion',
+    \ 'javascript.jsx': 'jsxRegion',
+    \ }
+" Add > at current position without closing the current tag, default is ''
+let g:closetag_close_shortcut = '<leader>>'
 
-" Language server for flutter
-let g:lsc_auto_map = v:true
-autocmd BufNewFile,BufRead *.tsx,*.jsx set filetype=typescript.tsx
+" Plugin Configuration
+nnoremap <silent> <C-p> :FZF<CR>
+nnoremap <silent> <C-t> :tabnew<CR>
+nnoremap <silent> <C-o> :CtrlSF<space>
 
-" CtrlP configuration
-let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
-
-" CtrSF configuration
-let g:ctrlsf_ackprg = 'ag'
-let g:ctrlsf_position = 'bottom'
