@@ -43,6 +43,8 @@ Plug 'alvan/vim-closetag'
 Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive'
+Plug 'wincent/terminus'
+Plug 'scrooloose/nerdtree'
 
 call plug#end()
 
@@ -61,4 +63,4 @@ let g:closetag_close_shortcut = '<leader>>'
 nnoremap <silent> <C-p> :FZF<CR>
 nnoremap <silent> <C-t> :tabnew<CR>
 nnoremap <silent> <C-o> :CtrlSF<space>
-
+nmap <C-b> :NERDTreeToggle<CR>
