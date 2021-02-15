@@ -1,11 +1,12 @@
 " Vim Configuration
 set nocompatible
+set nowrap
 filetype off
 
 syntax enable
+set relativenumber
 set number
 set linebreak
-set textwidth=100
 set showmatch
 set visualbell
 set mouse=a
@@ -27,13 +28,14 @@ set background=dark
 set undolevels=1000
 set backspace=indent,eol,start
 hi Pmenu ctermbg=black ctermfg=white
+set colorcolumn=100
+hi ColorColumn guibg=#a9a9a9 ctermbg=236
 
 " Plugin List
 call plug#begin('~/.vim/plugged')
 
 Plug 'sheerun/vim-polyglot'
 Plug 'junegunn/fzf'
-Plug 'tpope/vim-surround'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'vim-airline/vim-airline'
 Plug 'dyng/ctrlsf.vim'
@@ -41,10 +43,8 @@ Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'jiangmiao/auto-pairs'
 Plug 'alvan/vim-closetag'
 Plug 'scrooloose/nerdcommenter'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-fugitive'
-Plug 'wincent/terminus'
 Plug 'scrooloose/nerdtree'
+Plug 'tpope/vim-surround'
 
 call plug#end()
 
@@ -61,6 +61,6 @@ let g:closetag_close_shortcut = '<leader>>'
 
 " Plugin Configuration
 nnoremap <silent> <C-p> :FZF<CR>
-nnoremap <silent> <C-t> :tabnew<CR>
-nnoremap <silent> <C-o> :CtrlSF<space>
-nmap <C-b> :NERDTreeToggle<CR>
+nnoremap tn :tabnew<CR>
+nnoremap th :NERDTreeToggle<CR>
+nnoremap <C-o> :CtrlSF<space>
