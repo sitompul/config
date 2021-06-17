@@ -1,10 +1,8 @@
-" Vim Configuration
 set nocompatible
 set nowrap
 filetype off
 
 syntax enable
-set relativenumber
 set number
 set linebreak
 set showmatch
@@ -19,6 +17,7 @@ set incsearch
 set ttyfast
 set lazyredraw
 
+set laststatus=2
 set autoindent
 set shiftwidth=2
 set smartindent
@@ -33,14 +32,12 @@ hi Pmenu ctermbg=black ctermfg=white
 set colorcolumn=100
 hi ColorColumn guibg=#a9a9a9 ctermbg=236
 
-" Plugin List
 call plug#begin('~/.vim/plugged')
 
 Plug 'sheerun/vim-polyglot'
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'vim-airline/vim-airline'
 Plug 'dyng/ctrlsf.vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'jiangmiao/auto-pairs'
@@ -48,30 +45,23 @@ Plug 'alvan/vim-closetag'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-surround'
-"Plug 'tomasiser/vim-code-dark'
-
-" IDE Support
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'thosakwe/vim-flutter'
-
+Plug 'itchyny/lightline.vim'
 call plug#end()
 
-"colorscheme codedark
-
-"vim-closetag configuration
 let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.tsx,*.jsx'
 let g:closetag_xhtml_filenames = '*.xhtml,*.tsx,*.xml,*.jsx'
 let g:closetag_emptyTags_caseSensitive = 1
 let g:closetag_regions = {
-    \ 'typescript.tsx': 'jsxRegion,tsxRegion',
-    \ 'javascript.jsx': 'jsxRegion',
-    \ }
-
-" Add > at current position without closing the current tag, default is ''
+  \ 'typescript.tsx': 'jsxRegion,tsxRegion',
+  \ 'javascript.jsx': 'jsxRegion',
+  \ }
 let g:closetag_close_shortcut = '<leader>>'
-let g:airline#extensions#tabline#enabled = 1
-" Plugin Configuration
+let g:lightline = {
+  \ 'colorscheme': 'ayu_dark',
+  \ }
 nnoremap <silent> <C-p> :FZF<CR>
 nnoremap <silent> <C-a> :Buffers<CR>
 nnoremap tn :tabnew<CR>
