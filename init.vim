@@ -34,6 +34,7 @@ hi ColorColumn guibg=#a9a9a9 ctermbg=236
 
 call plug#begin('~/.vim/plugged')
 
+Plug 'voldikss/vim-floaterm'
 Plug 'tpope/vim-fugitive'
 Plug 'sheerun/vim-polyglot'
 Plug 'junegunn/fzf'
@@ -53,6 +54,8 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'thosakwe/vim-flutter'
 Plug 'rust-lang/rust.vim'
+
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
 
 call plug#end()
 
@@ -78,6 +81,8 @@ nnoremap <C-o> :CtrlSF<space>
 nnoremap d "_d
 vnoremap d "_d
 
+
+"Show highlight modal
 setlocal winhighlight=Normal:PreviewWindowHighlight
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 function! s:show_documentation()
@@ -88,6 +93,50 @@ function! s:show_documentation()
   endif
 endfunction
 
+" Coc Source Code navigation
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
+
+" COC Diagnostic
+nmap <silent> <space>j :call CocAction('diagnosticNext')<cr>
+nmap <silent> <space>k :call CocAction('diagnosticPrevious')<cr>
+
+" Float term
+let g:floaterm_keymap_new    = '<Leader>fc'
+let g:floaterm_keymap_prev   = '<Leader>fp'
+let g:floaterm_keymap_next   = '<Leader>fn'
+let g:floaterm_keymap_toggle = '<Leader>ft'
+let g:floaterm_keymap_kill = '<Leader>fq'
+
+"Syntax highlighting for neovim
+lua <<EOF
+require 'nvim-treesitter.configs'.setup {
+  highlight = {
+    enable = true
+  },
+  ensure_installed = {
+    "go",
+    "javascript",
+    "typescript",
+    "swift",
+    "php",
+    "dart",
+    "rust",
+    "html",
+    "rust",
+    "toml",
+    "c",
+    "cpp",
+    "c_sharp",
+    "bash",
+    "vue",
+    "python",
+    "graphql",
+    "java",
+    "dockerfile",
+    "kotlin",
+    "json"
+  }
+}
+EOF
