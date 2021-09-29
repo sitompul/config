@@ -3,13 +3,11 @@ set nowrap
 filetype off
 set noshowmode
 syntax enable
-set number
 set hidden
 set linebreak
 set showmatch
 set visualbell
 set mouse=n
-set rnu
 set hlsearch
 set smartcase
 set ignorecase
