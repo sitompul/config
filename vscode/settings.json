@@ -1,27 +1,15 @@
 {
-    "telemetry.enableCrashReporter": false,
-    "telemetry.enableTelemetry": false,
-    "workbench.statusBar.visible": false,
     "window.menuBarVisibility": "toggle",
     "editor.minimap.enabled": false,
-    "editor.fontFamily": "Fira Code Retina",
-    "editor.tabSize": 2,
+    "workbench.colorTheme": "GitHub Dark",
+    "extensions.ignoreRecommendations": true,
+    "editor.fontFamily": "'CaskaydiaCove Nerd Font', 'monospace', monospace, 'Droid Sans Fallback'",
     "editor.fontLigatures": true,
-    "workbench.activityBar.visible": true,
-    "editor.rulers": [120],
-    "window.zoomLevel": 0,
-    "editor.fontSize": 12,
-    "go.formatTool": "goimports",
-    "go.useLanguageServer": true,
-    "terminal.integrated.fontSize": 12,
-    "typescript.updateImportsOnFileMove.enabled": "always",
-    "vs-kubernetes": {
-        "vs-kubernetes.minikube-path": "/home/odin/.vs-kubernetes/tools/minikube/linux-amd64/minikube"
-    },
-    "workbench.colorTheme": "Dracula At Night",
-    "workbench.colorCustomizations": {
-        "activityBar.background": "#0e1419",
-        "tab.activeBackground": "#0e1419",
-        "tab.activeBorder": "#0e1419"
-    }
+    "go.toolsManagement.autoUpdate": true,
+    "redhat.telemetry.enabled": false,
+    "editor.rulers": [
+        100
+    ],
+    "editor.lineNumbers": "off",
+    "editor.glyphMargin": false,
 }
