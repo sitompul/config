@@ -42,7 +42,6 @@ Plug 'sheerun/vim-polyglot'
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'dyng/ctrlsf.vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'jiangmiao/auto-pairs'
 Plug 'alvan/vim-closetag'
@@ -81,7 +80,7 @@ let NERDTreeShowHidden=1
 
 nnoremap tp :noh<CR>
 nnoremap tn :tabnew<CR>
-nnoremap <C-f> :CtrlSF<space>
+nnoremap <C-f> :Ag<space>
 nnoremap d "_d
 vnoremap d "_d
 set fillchars+=vert:\
