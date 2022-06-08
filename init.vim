@@ -1,7 +1,7 @@
 set nocompatible
-set nowrap
 filetype off
 set noshowmode
+set nowrap
 syntax enable
 set hidden
 set linebreak
@@ -58,9 +58,6 @@ Plug 'thosakwe/vim-flutter'
 Plug 'rust-lang/rust.vim'
 Plug 'OmniSharp/omnisharp-vim'
 
-" Treesitter
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
-
 call plug#end()
 
 let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.tsx,*.jsx'
@@ -84,7 +81,7 @@ let NERDTreeShowHidden=1
 
 nnoremap tp :noh<CR>
 nnoremap tn :tabnew<CR>
-nnoremap <C-o> :CtrlSF<space>
+nnoremap <C-f> :CtrlSF<space>
 nnoremap d "_d
 vnoremap d "_d
 set fillchars+=vert:\
@@ -94,42 +91,8 @@ let g:floaterm_keymap_new    = '<Leader>fc'
 let g:floaterm_keymap_prev   = '<Leader>fp'
 let g:floaterm_keymap_next   = '<Leader>fn'
 let g:floaterm_keymap_toggle = '<Leader>ft'
-let g:floaterm_keymap_kill = '<Leader>fq'
+let g:floaterm_keymap_kill = '<Leader>fx'
 let g:floaterm_width = 1.0
-
-" Treesitter
-if has('nvim')
-lua <<EOF
-require 'nvim-treesitter.configs'.setup {
-  highlight = {
-    enable = true
-  },
-  ensure_installed = {
-    "go",
-    "javascript",
-    "typescript",
-    "swift",
-    "php",
-    "dart",
-    "rust",
-    "html",
-    "rust",
-    "toml",
-    "c",
-    "cpp",
-    "c_sharp",
-    "bash",
-    "vue",
-    "python",
-    "graphql",
-    "java",
-    "dockerfile",
-    "kotlin",
-    "json"
-  }
-}
-EOF
-endif
 
 " COC
 nmap <silent> <space>j :call CocAction('diagnosticNext')<cr>
@@ -140,6 +103,7 @@ if has("nvim-0.5.0") || has("patch-8.1.1564")
 else
   set signcolumn=yes
 endif
+
 " Use tab for trigger completion with characters ahead and navigate.
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
@@ -150,12 +114,14 @@ function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
+
 " Use <c-space> to trigger completion.
 if has('nvim')
   inoremap <silent><expr> <c-space> coc#refresh()
 else
   inoremap <silent><expr> <c-@> coc#refresh()
 endif
+
 " Make <CR> auto-select the first completion item and notify coc.nvim to
 " format on enter, <cr> could be remapped by other vim plugin
 inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
@@ -165,6 +131,7 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 function! s:show_documentation()
@@ -175,4 +142,4 @@ function! s:show_documentation()
   else
     execute '!' . &keywordprg . " " . expand('<cword>')
   endif
-endfunctio
+endfunction
