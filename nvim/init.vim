@@ -33,12 +33,13 @@ set backspace=indent,eol,start
 hi Pmenu ctermbg=black ctermfg=white
 set colorcolumn=100
 hi ColorColumn guibg=#a9a9a9 ctermbg=236
+set fillchars+=vert:\
 
 call plug#begin('~/.vim/plugged')
 
 Plug 'voldikss/vim-floaterm'
 Plug 'tpope/vim-fugitive'
-Plug 'sheerun/vim-polyglot'
+Plug 'sheerun/vim-polyglot', {'branch': 'master'}
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -59,43 +60,51 @@ Plug 'OmniSharp/omnisharp-vim'
 
 call plug#end()
 
-let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.tsx,*.jsx'
-let g:closetag_xhtml_filenames = '*.xhtml,*.tsx,*.xml,*.jsx'
+" Closetag
+let g:closetag_filenames               = '*.html,*.xhtml,*.phtml,*.tsx,*.jsx'
+let g:closetag_xhtml_filenames         = '*.xhtml,*.tsx,*.xml,*.jsx'
 let g:closetag_emptyTags_caseSensitive = 1
-let g:closetag_regions = {
+let g:closetag_regions                 = {
   \ 'typescript.tsx': 'jsxRegion,tsxRegion',
   \ 'javascript.jsx': 'jsxRegion',
   \ }
-let g:closetag_close_shortcut = '<leader>>'
+let g:closetag_close_shortcut          = '<leader>>'
+
+" Lightline
 let g:lightline = {
   \ 'colorscheme': 'ayu_dark',
   \ }
-nnoremap <silent> <C-p> :FZF<CR>
-nnoremap <silent> <C-a> :Buffers<CR>
+
 
 " NERDTree
-nnoremap th :NERDTreeToggle<CR>
-nnoremap tf :NERDTreeFind<CR>
-let NERDTreeShowHidden=1
+let NERDTreeShowHidden = 1
 
-nnoremap tp :noh<CR>
-nnoremap tn :tabnew<CR>
-nnoremap <C-f> :Ag<space>
+" Custom shortcut
+nnoremap <silent> <C-p> : FZF<CR>
+nnoremap <silent> <C-a> : Buffers<CR>
+nnoremap th             : NERDTreeToggle<CR>
+nnoremap tf             : NERDTreeFind<CR>
+nnoremap tp             : noh<CR>
+nnoremap tn             : tabnew<CR>
+nnoremap <C-f>          : Ag<space>
+nnoremap tr             : CocRestart<CR><CR>
 nnoremap d "_d
 vnoremap d "_d
-set fillchars+=vert:\
 
 " Float term
+let g:floaterm_title         = '[$1 of $2]'
 let g:floaterm_keymap_new    = '<Leader>fc'
 let g:floaterm_keymap_prev   = '<Leader>fp'
 let g:floaterm_keymap_next   = '<Leader>fn'
 let g:floaterm_keymap_toggle = '<Leader>ft'
-let g:floaterm_keymap_kill = '<Leader>fx'
-let g:floaterm_width = 1.0
+let g:floaterm_keymap_kill   = '<Leader>fx'
+let g:floaterm_width         = 1.0
+let g:floaterm_position      = 'bottom'
 
 " COC
-nmap <silent> <space>j :call CocAction('diagnosticNext')<cr>
-nmap <silent> <space>k :call CocAction('diagnosticPrevious')<cr>
+let g:coc_global_extensions = [ 'coc-omnisharp', 'coc-tsserver', 'coc-go', 'coc-rust-analyzer', 'coc-clangd', 'coc-pyright', 'coc-flutter' ]
+nmap <silent> <space>j      : call CocAction('diagnosticNext')<cr>
+nmap <silent> <space>k      : call CocAction('diagnosticPrevious')<cr>
 if has("nvim-0.5.0") || has("patch-8.1.1564")
   " Recently vim can merge signcolumn and number column into one
   set signcolumn=number
