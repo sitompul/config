@@ -1,5 +1,5 @@
 # .bashrc
-export PS1="\[$(tput bold)\]\[\033[38;5;42m\]\w\[$(tput sgr0)\] \[$(tput sgr0)\]\[\033[38;5;14m\]\$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/')\[$(tput sgr0)\]\n\[$(tput sgr0)\]\[$(tput bold)\]\[\033[38;5;11m\]\\$\[$(tput sgr0)\] \[$(tput sgr0)\]"
+export PS1="\[$(tput bold)\]\[\033[38;5;11m\]\w\[$(tput sgr0)\] \$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/')\n\[$(tput sgr0)\]\[$(tput bold)\]\[\033[38;5;14m\]\\$\[$(tput sgr0)\] \[$(tput sgr0)\]"
 
 
 # Node
@@ -34,7 +34,3 @@ alias msf="docker run -it --privileged --net=host metasploitframework/metasploit
 
 # Qt5CT
 export QT_QPA_PLATFORMTHEME=qt5ct
-
-# Snap
-alias disable-snap="sudo systemctl stop snapd.service && sudo systemctl mask snapd.service"
-alias enable-snap="sudo systemctl unmask snapd.service && sudo systemctl start snapd.service && sudo snap refresh"
