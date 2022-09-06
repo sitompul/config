@@ -40,8 +40,8 @@ vim.o.fillchars = "vert: ,eob:_"
 require("packer").startup(function(use)
   -- Extensions
   use "wbthomason/packer.nvim"
-	use "junegunn/fzf"
-	use "junegunn/fzf.vim"
+  use "junegunn/fzf"
+  use "junegunn/fzf.vim"
   use "voldikss/vim-floaterm"
   use "tpope/vim-fugitive"
   use { "mg979/vim-visual-multi", branch = "master" }
