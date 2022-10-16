@@ -1,1 +1,1 @@
-sudo dnf -y install fzf the_silver_searcher
+sudo dnf -y install skim ripgrep
