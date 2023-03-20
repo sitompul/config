@@ -82,6 +82,17 @@ require('packer').startup(function(user)
         silent = false
     })
 
+    -- Surround
+    use({
+        "kylechui/nvim-surround",
+        tag = "*", -- Use for stability; omit to use `main` branch for the latest features
+        config = function()
+            require("nvim-surround").setup({
+                -- Configuration here, or leave empty to use defaults
+            })
+        end
+    })
+
     -- Folder Tree Explorer: Neo-tree
     use {
         "nvim-neo-tree/neo-tree.nvim",
@@ -184,7 +195,10 @@ require('packer').startup(function(user)
         snippet = {
             -- REQUIRED - you must specify a snippet engine
             expand = function(args)
-                vim.fn["vsnip#anonymous"](args.body)
+                vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+                -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+                -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+                -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
             end
         },
         window = {
@@ -223,7 +237,10 @@ require('packer').startup(function(user)
             name = 'nvim_lsp'
         }, {
             name = 'vsnip'
-        }
+        } -- For vsnip users.
+        -- { name = 'luasnip' }, -- For luasnip users.
+        -- { name = 'ultisnips' }, -- For ultisnips users.
+        -- { name = 'snippy' }, -- For snippy users.
         }, {{
             name = 'buffer'
         }})
@@ -285,7 +302,6 @@ require('packer').startup(function(user)
 
     -- Auto pairs and autocomplete integration
     local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-    local cmp = require('cmp')
     cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
 end)
 
