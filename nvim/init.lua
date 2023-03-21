@@ -120,6 +120,9 @@ require('packer').startup(function(user)
         auto_install = true,
         highlight = {
             enable = true
+        },
+        autotag = {
+          enable = true,
         }
     }
 
@@ -174,6 +177,9 @@ require('packer').startup(function(user)
         extensions = {}
     }
 
+    -- Auto close tag
+    use 'windwp/nvim-ts-autotag'
+
     -- Auto pairs: nvim-autopairs
     use {
         "windwp/nvim-autopairs",
@@ -200,7 +206,7 @@ require('packer').startup(function(user)
         },
         window = {
             -- completion = cmp.config.window.bordered(),
-            -- documentation = cmp.config.window.bordered(),
+            documentation = cmp.config.window.bordered(),
         },
         mapping = cmp.mapping.preset.insert({
             ['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -272,13 +278,25 @@ require('packer').startup(function(user)
     use 'neovim/nvim-lspconfig'
     -- Setup language servers.
     local lspconfig = require('lspconfig')
+    local util = require('lspconfig/util')
 
     local capabilities = require('cmp_nvim_lsp').default_capabilities()
     lspconfig.tsserver.setup {
         capabilities = capabilities
     }
     lspconfig.gopls.setup {
-        capabilities = capabilities
+        capabilities = capabilities,
+        cmd = {"gopls", "serve"},
+        filetypes = {"go", "gomod"},
+        root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+        settings = {
+            gopls = {
+                analyses = {
+                    unusedparams = true
+                },
+                staticcheck = true
+            }
+        }
     }
     lspconfig.clangd.setup {
         capabilities = capabilities
@@ -354,5 +372,21 @@ vim.api.nvim_create_autocmd('LspAttach', {
                 async = true
             }
         end, opts)
+    end
+})
+
+-- Format on save
+vim.api.nvim_create_autocmd('BufWritePre', {
+    pattern = '*.go',
+    callback = function()
+        vim.lsp.buf.format {
+            async = false
+        }
+        vim.lsp.buf.code_action({
+            context = {
+                only = {'source.organizeImports'}
+            },
+            apply = true
+        })
     end
 })
