@@ -1,1 +1,2 @@
-sudo dnf -y install clang g++ skim ripgrep neovim vim-common
+sudo dnf -y install git clang g++ skim ripgrep neovim vim-common && git clone --depth 1 https://github.com/wbthomason/packer.nvim\
+ ~/.local/share/nvim/site/pack/packer/start/packer.nvim
