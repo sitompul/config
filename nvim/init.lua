@@ -42,32 +42,91 @@ vim.opt.backspace = {'indent', 'eol', 'start'}
 vim.o.fillchars = "vert: ,eob:_"
 vim.opt.colorcolumn = "100"
 vim.cmd [[
-  hi CursorLine cterm=NONE ctermbg=236
-  hi VertSplit cterm=NONE ctermbg=245 ctermfg=245
-  hi Pmenu ctermbg=black ctermfg=white
-  hi ColorColumn guibg=#a9a9a9 ctermbg=236
-]]
+      hi CursorLine cterm=NONE ctermbg=236
+      hi VertSplit cterm=NONE ctermbg=245 ctermfg=245
+      hi Pmenu ctermbg=black ctermfg=white
+      hi ColorColumn guibg=#a9a9a9 ctermbg=236
+    ]]
 
 -- Extensions
 require('packer').startup(function(user)
     use "wbthomason/packer.nvim"
+    use 'akinsho/toggleterm.nvim'
+    use {
+        'ibhagwan/fzf-lua',
+        requires = {'kyazdani42/nvim-web-devicons'}
+    }
+    -- Surround
+    use({
+        "kylechui/nvim-surround",
+        tag = "*", -- Use for stability; omit to use `main` branch for the latest features
+        config = function()
+            require("nvim-surround").setup({
+                -- Configuration here, or leave empty to use defaults
+            })
+        end
+    })
+    use {
+        "nvim-neo-tree/neo-tree.nvim",
+        branch = "v2.x",
+        requires = {"nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim"}
+    }
+    use {
+        "nvim-treesitter/nvim-treesitter",
+        run = function()
+            require("nvim-treesitter.install").update({
+                with_sync = true
+            })
+        end
+    }
+    use {
+        'nvim-lualine/lualine.nvim',
+        requires = {
+            'kyazdani42/nvim-web-devicons',
+            opt = true
+        }
+    }
+    -- Auto close tag
+    use 'windwp/nvim-ts-autotag'
+
+    -- Auto pairs: nvim-autopairs
+    use {
+        "windwp/nvim-autopairs",
+        config = function()
+            require("nvim-autopairs").setup {}
+        end
+    }
+    use {
+      "windwp/nvim-spectre",
+      requires = { "nvim-lua/plenary.nvim" }
+    }
 
     -- Terminal
-    use 'akinsho/toggleterm.nvim'
     require'toggleterm'.setup {
         size = 20,
         open_mapping = [[<c-\>]],
         shade_terminals = true,
         direction = 'float'
     }
+    use 'hrsh7th/cmp-nvim-lsp'
+    use 'hrsh7th/cmp-buffer'
+    use 'hrsh7th/cmp-path'
+    use 'hrsh7th/cmp-cmdline'
+    use 'hrsh7th/nvim-cmp'
+    use 'hrsh7th/cmp-vsnip'
+    use 'hrsh7th/vim-vsnip'
+    use 'neovim/nvim-lspconfig'
+    -- Comment
+    use {
+        'numToStr/Comment.nvim',
+        config = function()
+            require('Comment').setup()
+        end
+    }
 
     -- Fuzzy Search: fzf-lua
-    use {
-        'ibhagwan/fzf-lua',
-        requires = {'kyazdani42/nvim-web-devicons'}
-    }
     require'fzf-lua'.setup {
-        fzf_bin = "fzf"
+        fzf_bin = "sk"
     }
     vim.api.nvim_set_keymap("n", "<C-p>", "<cmd>lua require('fzf-lua').files()<CR>", {
         noremap = true,
@@ -82,23 +141,7 @@ require('packer').startup(function(user)
         silent = false
     })
 
-    -- Surround
-    use({
-        "kylechui/nvim-surround",
-        tag = "*", -- Use for stability; omit to use `main` branch for the latest features
-        config = function()
-            require("nvim-surround").setup({
-                -- Configuration here, or leave empty to use defaults
-            })
-        end
-    })
-
     -- Folder Tree Explorer: Neo-tree
-    use {
-        "nvim-neo-tree/neo-tree.nvim",
-        branch = "v2.x",
-        requires = {"nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim"}
-    }
     map("n", "th", ":NeoTreeShowToggle<CR>", {
         silent = true
     })
@@ -107,14 +150,6 @@ require('packer').startup(function(user)
     })
 
     -- Highlighter
-    use {
-        "nvim-treesitter/nvim-treesitter",
-        run = function()
-            require("nvim-treesitter.install").update({
-                with_sync = true
-            })
-        end
-    }
     require'nvim-treesitter.configs'.setup {
         ensure_installed = {"rust", "cpp", "javascript", "typescript", "go"},
         auto_install = true,
@@ -122,18 +157,11 @@ require('packer').startup(function(user)
             enable = true
         },
         autotag = {
-          enable = true,
+            enable = true
         }
     }
 
     -- Statusline
-    use {
-        'nvim-lualine/lualine.nvim',
-        requires = {
-            'kyazdani42/nvim-web-devicons',
-            opt = true
-        }
-    }
     require('lualine').setup {
         options = {
             icons_enabled = true,
@@ -177,25 +205,7 @@ require('packer').startup(function(user)
         extensions = {}
     }
 
-    -- Auto close tag
-    use 'windwp/nvim-ts-autotag'
-
-    -- Auto pairs: nvim-autopairs
-    use {
-        "windwp/nvim-autopairs",
-        config = function()
-            require("nvim-autopairs").setup {}
-        end
-    }
-
     -- Autocomplete: cmp
-    use 'hrsh7th/cmp-nvim-lsp'
-    use 'hrsh7th/cmp-buffer'
-    use 'hrsh7th/cmp-path'
-    use 'hrsh7th/cmp-cmdline'
-    use 'hrsh7th/nvim-cmp'
-    use 'hrsh7th/cmp-vsnip'
-    use 'hrsh7th/vim-vsnip'
     local cmp = require 'cmp'
     cmp.setup({
         snippet = {
@@ -205,8 +215,8 @@ require('packer').startup(function(user)
             end
         },
         window = {
-            -- completion = cmp.config.window.bordered(),
-            documentation = cmp.config.window.bordered(),
+            completion = cmp.config.window.bordered(),
+            documentation = cmp.config.window.bordered()
         },
         mapping = cmp.mapping.preset.insert({
             ['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -275,7 +285,7 @@ require('packer').startup(function(user)
     })
 
     -- LSP
-    use 'neovim/nvim-lspconfig'
+
     -- Setup language servers.
     local lspconfig = require('lspconfig')
     local util = require('lspconfig/util')
@@ -298,6 +308,9 @@ require('packer').startup(function(user)
             }
         }
     }
+    lspconfig.pyright.setup {
+        capabilities = capabilities
+    }
     lspconfig.clangd.setup {
         capabilities = capabilities
     }
@@ -316,13 +329,6 @@ require('packer').startup(function(user)
     local cmp_autopairs = require('nvim-autopairs.completion.cmp')
     cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
 
-    -- Comment
-    use {
-        'numToStr/Comment.nvim',
-        config = function()
-            require('Comment').setup()
-        end
-    }
 end)
 
 -- Vanilla Binding
@@ -389,4 +395,17 @@ vim.api.nvim_create_autocmd('BufWritePre', {
             apply = true
         })
     end
+})
+
+vim.keymap.set('n', '<leader>S', '<cmd>lua require("spectre").open()<CR>', {
+    desc = "Open Spectre"
+})
+vim.keymap.set('n', '<leader>sw', '<cmd>lua require("spectre").open_visual({select_word=true})<CR>', {
+    desc = "Search current word"
+})
+vim.keymap.set('v', '<leader>sw', '<esc><cmd>lua require("spectre").open_visual()<CR>', {
+    desc = "Search current word"
+})
+vim.keymap.set('n', '<leader>sp', '<cmd>lua require("spectre").open_file_search({select_word=true})<CR>', {
+    desc = "Search on current file"
 })
