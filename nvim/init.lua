@@ -40,7 +40,7 @@ vim.opt.expandtab = true
 vim.opt.undolevels = 1000
 vim.opt.backspace = {'indent', 'eol', 'start'}
 vim.o.fillchars = "vert: ,eob:_"
-vim.opt.colorcolumn = "100"
+vim.opt.colorcolumn = "101"
 vim.cmd [[
       hi CursorLine cterm=NONE ctermbg=236
       hi VertSplit cterm=NONE ctermbg=245 ctermfg=245
@@ -50,6 +50,7 @@ vim.cmd [[
 
 -- Extensions
 require('packer').startup(function(user)
+    use 'Mofiqul/vscode.nvim'
     use "wbthomason/packer.nvim"
     use 'akinsho/toggleterm.nvim'
     use {
@@ -165,7 +166,7 @@ require('packer').startup(function(user)
     require('lualine').setup {
         options = {
             icons_enabled = true,
-            theme = 'ayu',
+            theme = 'vscode',
             disabled_filetypes = {
                 statusline = {},
                 winbar = {}
@@ -330,6 +331,30 @@ require('packer').startup(function(user)
     cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
 
 end)
+
+local c = require('vscode.colors').get_colors()
+require('vscode').setup({
+    -- Alternatively set style in setup
+    style = 'dark',
+
+    -- Enable transparent background
+    transparent = true,
+
+    -- Enable italic comment
+    italic_comments = true,
+
+    -- Disable nvim-tree background color
+    disable_nvimtree_bg = true,
+
+    -- Override highlight groups (see ./lua/vscode/theme.lua)
+    group_overrides = {
+        -- this supports the same val table as vim.api.nvim_set_hl
+        -- use colors from this colorscheme by requiring vscode.colors!
+        Cursor = { fg=c.vscDarkBlue, bg=c.vscLightGreen, bold=true },
+        VertSplit = {fg=c.vscSplitDark, bg='#545454'}
+    }
+})
+require('vscode').load()
 
 -- Vanilla Binding
 map("n", "tp", ":noh<CR>", {
