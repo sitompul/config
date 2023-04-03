@@ -195,7 +195,7 @@ require('packer').startup(function(user)
         },
         tabline = {
             lualine_a = {'tabs'},
-            lualine_b = {'filename'},
+            lualine_b = {{'filename', path=1, file_status=true}},
             lualine_c = {},
             lualine_x = {},
             lualine_y = {},
