@@ -21,6 +21,7 @@ end
 
 -- Options Configuration
 vim.opt.syntax = 'enable'
+vim.opt.signcolumn = 'yes'
 vim.opt.showmode = true
 vim.opt.wrap = false
 vim.opt.mouse = 'n'
@@ -50,6 +51,7 @@ vim.cmd [[
 
 -- Extensions
 require('packer').startup(function(user)
+    use "lukas-reineke/indent-blankline.nvim"
     use 'Mofiqul/vscode.nvim'
     use "wbthomason/packer.nvim"
     use 'akinsho/toggleterm.nvim'
@@ -71,6 +73,11 @@ require('packer').startup(function(user)
         "nvim-neo-tree/neo-tree.nvim",
         branch = "v2.x",
         requires = {"nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim"}
+    }
+    vim.opt.list = true
+
+    require("indent_blankline").setup {
+        show_end_of_line = true
     }
     use {
         "nvim-treesitter/nvim-treesitter",
@@ -98,8 +105,8 @@ require('packer').startup(function(user)
         end
     }
     use {
-      "windwp/nvim-spectre",
-      requires = { "nvim-lua/plenary.nvim" }
+        "windwp/nvim-spectre",
+        requires = {"nvim-lua/plenary.nvim"}
     }
 
     -- Terminal
@@ -195,7 +202,11 @@ require('packer').startup(function(user)
         },
         tabline = {
             lualine_a = {'tabs'},
-            lualine_b = {{'filename', path=1, file_status=true}},
+            lualine_b = {{
+                'filename',
+                path = 1,
+                file_status = true
+            }},
             lualine_c = {},
             lualine_x = {},
             lualine_y = {},
@@ -350,8 +361,15 @@ require('vscode').setup({
     group_overrides = {
         -- this supports the same val table as vim.api.nvim_set_hl
         -- use colors from this colorscheme by requiring vscode.colors!
-        Cursor = { fg=c.vscDarkBlue, bg=c.vscLightGreen, bold=true },
-        VertSplit = {fg=c.vscSplitDark, bg='#545454'}
+        Cursor = {
+            fg = c.vscDarkBlue,
+            bg = c.vscLightGreen,
+            bold = true
+        },
+        VertSplit = {
+            fg = c.vscSplitDark,
+            bg = '#3A3A3A'
+        }
     }
 })
 require('vscode').load()
