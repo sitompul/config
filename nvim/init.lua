@@ -44,10 +44,10 @@ vim.opt.backspace = {"indent", "eol", "start"}
 vim.o.fillchars = "vert: ,eob:_"
 vim.opt.colorcolumn = "101"
 vim.cmd [[
-    hi CursorLine cterm=NONE ctermbg=236
-    hi VertSplit cterm=NONE ctermbg=245 ctermfg=245
-    hi Pmenu ctermbg=black ctermfg=white
-    hi ColorColumn guibg=#a9a9a9 ctermbg=236
+  hi CursorLine cterm=NONE ctermbg=236
+  hi VertSplit cterm=NONE ctermbg=245 ctermfg=245
+  hi Pmenu ctermbg=black ctermfg=white
+  hi ColorColumn guibg=#a9a9a9 ctermbg=236
   ]]
 
 -- Extensions
@@ -115,7 +115,7 @@ require("packer").startup(function(user)
     size = 20,
     open_mapping = [[<c-\>]],
     shade_terminals = true,
-    direction = 'float'
+    direction = "float"
   }
   use "hrsh7th/cmp-nvim-lsp"
   use "hrsh7th/cmp-buffer"
@@ -169,14 +169,11 @@ require("packer").startup(function(user)
       enable = true
     }
   }
+
   -- Illuminate Configuration for matching tags
-  require('illuminate').configure({
+  require("illuminate").configure({
     -- providers: provider used to get references in the buffer, ordered by priority
-    providers = {
-        'lsp',
-        'treesitter',
-        'regex',
-    },
+    providers = {"lsp", "treesitter", "regex"},
     -- delay: delay in milliseconds
     delay = 100,
     -- filetype_overrides: filetype specific overrides.
@@ -184,10 +181,7 @@ require("packer").startup(function(user)
     -- supports the same keys passed to .configure except for filetypes_denylist and filetypes_allowlist
     filetype_overrides = {},
     -- filetypes_denylist: filetypes to not illuminate, this overrides filetypes_allowlist
-    filetypes_denylist = {
-        'dirvish',
-        'fugitive',
-    },
+    filetypes_denylist = {"dirvish", "fugitive"},
     -- filetypes_allowlist: filetypes to illuminate, this is overriden by filetypes_denylist
     filetypes_allowlist = {},
     -- modes_denylist: modes to not illuminate, this overrides modes_allowlist
@@ -197,12 +191,12 @@ require("packer").startup(function(user)
     -- See `:help mode()` for possible values
     modes_allowlist = {},
     -- providers_regex_syntax_denylist: syntax to not illuminate, this overrides providers_regex_syntax_allowlist
-    -- Only applies to the 'regex' provider
-    -- Use :echom synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name')
+    -- Only applies to the "regex" provider
+    -- Use :echom synIDattr(synIDtrans(synID(line(".'), col('.'), 1)), 'name")
     providers_regex_syntax_denylist = {},
     -- providers_regex_syntax_allowlist: syntax to illuminate, this is overriden by providers_regex_syntax_denylist
-    -- Only applies to the 'regex' provider
-    -- Use :echom synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name')
+    -- Only applies to the "regex" provider
+    -- Use :echom synIDattr(synIDtrans(synID(line(".'), col('.'), 1)), 'name")
     providers_regex_syntax_allowlist = {},
     -- under_cursor: whether or not to illuminate under the cursor
     under_cursor = true,
@@ -214,7 +208,7 @@ require("packer").startup(function(user)
     -- If nil, vim-illuminate will be disabled for large files.
     large_file_overrides = nil,
     -- min_count_to_highlight: minimum number of matches required to perform highlighting
-    min_count_to_highlight = 1,
+    min_count_to_highlight = 1
   })
 
   -- Statusline
@@ -271,7 +265,7 @@ require("packer").startup(function(user)
   }
 
   -- Autocomplete: cmp
-  local cmp = require 'cmp'
+  local cmp = require "cmp"
   cmp.setup({
     snippet = {
       -- REQUIRED - you must specify a snippet engine
@@ -284,11 +278,11 @@ require("packer").startup(function(user)
       documentation = cmp.config.window.bordered()
     },
     mapping = cmp.mapping.preset.insert({
-      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-      ['<C-f>'] = cmp.mapping.scroll_docs(4),
-      ['<C-Space>'] = cmp.mapping.complete(),
-      ['<C-e>'] = cmp.mapping.abort(),
-      ['<CR>'] = cmp.mapping.confirm({
+      ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+      ["<C-f>"] = cmp.mapping.scroll_docs(4),
+      ["<C-Space>"] = cmp.mapping.complete(),
+      ["<C-e>"] = cmp.mapping.abort(),
+      ["<CR>"] = cmp.mapping.confirm({
         select = true
       }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
       ["<Tab>"] = cmp.mapping(function(fallback)
@@ -312,50 +306,50 @@ require("packer").startup(function(user)
       end, {"i", "s"})
     }),
     sources = cmp.config.sources({{
-      name = 'nvim_lsp'
+      name = "nvim_lsp"
     }, {
-      name = 'vsnip'
+      name = "vsnip"
     } -- For vsnip users.
     }, {{
-      name = 'buffer'
+      name = "buffer"
     }})
   })
 
   -- Set configuration for specific filetype.
-  cmp.setup.filetype('gitcommit', {
+  cmp.setup.filetype("gitcommit", {
     sources = cmp.config.sources({{
-      name = 'cmp_git'
+      name = "cmp_git"
     } -- You can specify the `cmp_git` source if you were installed it.
     }, {{
-      name = 'buffer'
+      name = "buffer"
     }})
   })
 
   -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
-  cmp.setup.cmdline({'/', '?'}, {
+  cmp.setup.cmdline({"/', '?"}, {
     mapping = cmp.mapping.preset.cmdline(),
     sources = {{
-      name = 'buffer'
+      name = "buffer"
     }}
   })
 
-  -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
-  cmp.setup.cmdline(':', {
+  -- Use cmdline & path source for ":' (if you enabled `native_menu`, this won"t work anymore).
+  cmp.setup.cmdline(":", {
     mapping = cmp.mapping.preset.cmdline(),
     sources = cmp.config.sources({{
-      name = 'path'
+      name = "path"
     }}, {{
-      name = 'cmdline'
+      name = "cmdline"
     }})
   })
 
   -- LSP
 
   -- Setup language servers.
-  local lspconfig = require('lspconfig')
-  local util = require('lspconfig/util')
+  local lspconfig = require("lspconfig")
+  local util = require("lspconfig/util")
 
-  local capabilities = require('cmp_nvim_lsp').default_capabilities()
+  local capabilities = require("cmp_nvim_lsp").default_capabilities()
   lspconfig.tsserver.setup {
     capabilities = capabilities
   }
@@ -382,7 +376,7 @@ require("packer").startup(function(user)
   lspconfig.rust_analyzer.setup {
     capabilities = capabilities,
     settings = {
-      ['rust-analyzer'] = {
+      ["rust-analyzer"] = {
         diagnostics = {
           enable = false
         }
@@ -391,15 +385,15 @@ require("packer").startup(function(user)
   }
 
   -- Auto pairs and autocomplete integration
-  local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-  cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
+  local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+  cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
 
 end)
 
-local c = require('vscode.colors').get_colors()
-require('vscode').setup({
+local c = require("vscode.colors").get_colors()
+require("vscode").setup({
   -- Alternatively set style in setup
-  style = 'dark',
+  style = "dark",
 
   -- Enable transparent background
   transparent = true,
@@ -421,11 +415,11 @@ require('vscode').setup({
     },
     VertSplit = {
       fg = c.vscSplitDark,
-      bg = '#3A3A3A'
+      bg = "#3A3A3A"
     }
   }
 })
-require('vscode').load()
+require("vscode").load()
 
 -- Vanilla Binding
 map("n", "tp", ":noh<CR>", {
@@ -437,39 +431,39 @@ map("n", "tn", ":tabnew<CR>", {
 
 -- Native LSP Mapping
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist)
+vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
+vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist)
 
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
-vim.api.nvim_create_autocmd('LspAttach', {
-  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("UserLspConfig", {}),
   callback = function(ev)
     -- Enable completion triggered by <c-x><c-o>
-    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+    vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
 
     -- Buffer local mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local opts = {
       buffer = ev.buf
     }
-    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-    vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
-    vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
-    vim.keymap.set('n', '<space>wl', function()
+    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+    vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+    vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
+    vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, opts)
+    vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, opts)
+    vim.keymap.set("n", "<space>wl", function()
       print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
     end, opts)
-    vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
-    vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
-    vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, opts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-    vim.keymap.set('n', '<space>f', function()
+    vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, opts)
+    vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, opts)
+    vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, opts)
+    vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+    vim.keymap.set("n", "<space>f", function()
       vim.lsp.buf.format {
         async = true
       }
@@ -478,30 +472,30 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
 -- Format on save
-vim.api.nvim_create_autocmd('BufWritePre', {
-  pattern = '*.go',
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*.go",
   callback = function()
     vim.lsp.buf.format {
       async = false
     }
     vim.lsp.buf.code_action({
       context = {
-        only = {'source.organizeImports'}
+        only = {"source.organizeImports"}
       },
       apply = true
     })
   end
 })
 
-vim.keymap.set('n', '<leader>S', '<cmd>lua require("spectre").open()<CR>', {
+vim.keymap.set("n", "<leader>S", "<cmd>lua require('spectre').open()<CR>", {
   desc = "Open Spectre"
 })
-vim.keymap.set('n', '<leader>sw', '<cmd>lua require("spectre").open_visual({select_word=true})<CR>', {
+vim.keymap.set("n", "<leader>sw", "<cmd>lua require('spectre').open_visual({select_word=true})<CR>", {
   desc = "Search current word"
 })
-vim.keymap.set('v', '<leader>sw', '<esc><cmd>lua require("spectre").open_visual()<CR>', {
+vim.keymap.set("v", "<leader>sw", "<esc><cmd>lua require('spectre').open_visual()<CR>", {
   desc = "Search current word"
 })
-vim.keymap.set('n', '<leader>sp', '<cmd>lua require("spectre").open_file_search({select_word=true})<CR>', {
+vim.keymap.set("n", "<leader>sp", "<cmd>lua require('spectre').open_file_search({select_word=true})<CR>", {
   desc = "Search on current file"
 })
