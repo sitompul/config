@@ -82,6 +82,9 @@ require("packer").startup(function(user)
   use "nvim-tree/nvim-tree.lua"
   use {
     "nvim-treesitter/nvim-treesitter",
+    requires = {
+      "JoosepAlviste/nvim-ts-context-commentstring",
+    },
     run = function()
       require("nvim-treesitter.install").update({
         with_sync = true
@@ -123,7 +126,9 @@ require("packer").startup(function(user)
   use {
     "numToStr/Comment.nvim",
     config = function()
-      require("Comment").setup()
+      require("Comment").setup({
+        pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
+      })
     end
   }
 end)
@@ -144,7 +149,8 @@ require"toggleterm".setup {
 
 -- Fuzzy Search: fzf-lua
 require"fzf-lua".setup {
-  fzf_bin = "sk"
+  -- fzf_bin = "sk"
+  fzf_bin = "fzf"
 }
 vim.api.nvim_set_keymap("n", "<C-p>", "<cmd>lua require('fzf-lua').files()<CR>", {
   noremap = true,
@@ -219,13 +225,23 @@ require("vscode").load()
 
 -- Highlighter
 require"nvim-treesitter.configs".setup {
-  ensure_installed = {"rust", "cpp", "javascript", "typescript", "go"},
+  ensure_installed = {
+    "go", "rust"
+  },
+
   auto_install = true,
+  context_commentstring = {
+    enable = true,
+  },
   highlight = {
     enable = true
   },
   autotag = {
     enable = true
+  },
+  -- autoindent = true,
+  indent = {
+    enable = true,
   }
 }
 
