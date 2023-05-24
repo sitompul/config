@@ -67,7 +67,10 @@ require("packer").startup(function(user)
   use "akinsho/toggleterm.nvim"
   use {
     "ibhagwan/fzf-lua",
-    requires = {"nvim-tree/nvim-web-devicons", branch = "master" }
+    requires = {
+      "nvim-tree/nvim-web-devicons",
+      branch = "master"
+    }
   }
   -- Surround
   use({
@@ -82,9 +85,7 @@ require("packer").startup(function(user)
   use "nvim-tree/nvim-tree.lua"
   use {
     "nvim-treesitter/nvim-treesitter",
-    requires = {
-      "JoosepAlviste/nvim-ts-context-commentstring",
-    },
+    requires = {"JoosepAlviste/nvim-ts-context-commentstring"},
     run = function()
       require("nvim-treesitter.install").update({
         with_sync = true
@@ -108,10 +109,6 @@ require("packer").startup(function(user)
       require("nvim-autopairs").setup {}
     end
   }
-  use {
-    "windwp/nvim-spectre",
-    requires = {"nvim-lua/plenary.nvim"}
-  }
   use "hrsh7th/cmp-nvim-lsp"
   use "hrsh7th/cmp-buffer"
   use "hrsh7th/cmp-path"
@@ -119,24 +116,24 @@ require("packer").startup(function(user)
   use "hrsh7th/nvim-cmp"
   use "hrsh7th/cmp-vsnip"
   use "hrsh7th/vim-vsnip"
-  use "williamboman/mason.nvim"
-  use "williamboman/mason-lspconfig.nvim"
   use "neovim/nvim-lspconfig"
   -- Comment
   use {
     "numToStr/Comment.nvim",
     config = function()
       require("Comment").setup({
-        pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
+        pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook()
       })
     end
   }
 end)
 
-
 -- Showing IDE like blank line.
 require("indent_blankline").setup {
-  show_end_of_line = true
+  show_end_of_line = true,
+  space_char_blankline = " ",
+  show_current_context = true,
+  show_current_context_start = true,
 }
 
 -- Terminal
@@ -170,13 +167,13 @@ require("nvim-tree").setup({
   sort_by = "case_sensitive",
   renderer = {
     -- group_empty = true
-        indent_markers = {
-        enable = true,
-        icons = {
-            corner = "└ ",
-            edge = "│ ",
-            none = "  ",
-        },
+    indent_markers = {
+      enable = true,
+      icons = {
+        corner = "└ ",
+        edge = "│ ",
+        none = "  "
+      }
     }
   },
   filters = {
@@ -189,7 +186,6 @@ map("n", "th", ":NvimTreeToggle <CR>", {
 map("n", "tf", ":NvimTreeFindFile <CR>", {
   silent = true
 })
-
 
 -- Theme
 local c = require("vscode.colors").get_colors()
@@ -225,13 +221,11 @@ require("vscode").load()
 
 -- Highlighter
 require"nvim-treesitter.configs".setup {
-  ensure_installed = {
-    "go", "rust"
-  },
+  ensure_installed = {"go", "rust"},
 
   auto_install = true,
   context_commentstring = {
-    enable = true,
+    enable = true
   },
   highlight = {
     enable = true
@@ -239,9 +233,8 @@ require"nvim-treesitter.configs".setup {
   autotag = {
     enable = true
   },
-  -- autoindent = true,
   indent = {
-    enable = true,
+    enable = true
   }
 }
 
@@ -336,7 +329,7 @@ require("lualine").setup {
       file_status = true
     }},
     lualine_c = {
-      "buffers",
+      -- "buffers"
     },
     lualine_x = {},
     lualine_y = {},
@@ -428,8 +421,6 @@ cmp.setup.cmdline(":", {
 
 -- LSP
 -- Setup language servers.
-require("mason").setup()
-require("mason-lspconfig").setup()
 local lspconfig = require("lspconfig")
 local util = require("lspconfig/util")
 
@@ -630,18 +621,4 @@ vim.api.nvim_create_autocmd("BufWritePre", {
       apply = true
     })
   end
-})
-
--- Specter modal for replacing content in multiple files.
-vim.keymap.set("n", "<leader>S", "<cmd>lua require(\"spectre\").open()<CR>", {
-  desc = "Open Spectre"
-})
-vim.keymap.set("n", "<leader>sw", "<cmd>lua require(\"spectre\").open_visual({select_word=true})<CR>", {
-  desc = "Search current word"
-})
-vim.keymap.set("v", "<leader>sw", "<esc><cmd>lua require(\"spectre\").open_visual()<CR>", {
-  desc = "Search current word"
-})
-vim.keymap.set("n", "<leader>sp", "<cmd>lua require(\"spectre\").open_file_search({select_word=true})<CR>", {
-  desc = "Search on current file"
 })
