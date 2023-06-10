@@ -45,6 +45,8 @@ vim.opt.colorcolumn = "101"
 vim.opt.termguicolors = true
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
+vim.g.vscode_italic_comment = 1
+vim.g.nvim_tree_respect_buf_cwd = 1
 vim.cmd [[
       hi CursorLine cterm=NONE ctermbg=236
       hi VertSplit cterm=NONE ctermbg=245 ctermfg=245
@@ -133,7 +135,7 @@ require("indent_blankline").setup {
   show_end_of_line = true,
   space_char_blankline = " ",
   show_current_context = true,
-  show_current_context_start = true,
+  show_current_context_start = true
 }
 
 -- Terminal
@@ -165,6 +167,10 @@ vim.api.nvim_set_keymap("n", "<C-a>", "<cmd>lua require('fzf-lua').buffers()<CR>
 -- Files tree.
 require("nvim-tree").setup({
   sort_by = "case_sensitive",
+  update_focused_file = {
+    enable = true,
+    update_cwd = true,
+  },
   renderer = {
     -- group_empty = true
     indent_markers = {
@@ -316,6 +322,8 @@ require("lualine").setup {
     lualine_z = {}
   },
   tabline = {
+    -- lualine_a = {},
+    -- lualine_b = {},
     lualine_a = {{
       "tabs",
       use_mode_colors = true,
