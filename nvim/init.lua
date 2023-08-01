@@ -56,6 +56,7 @@ vim.cmd [[
 
 -- Extensions
 require("packer").startup(function(user)
+  use "wbthomason/packer.nvim"
   use "mfussenegger/nvim-dap"
   use {
     "rcarriga/nvim-dap-ui",
@@ -65,7 +66,6 @@ require("packer").startup(function(user)
   use "lukas-reineke/indent-blankline.nvim"
   use "Mofiqul/vscode.nvim"
 
-  use "wbthomason/packer.nvim"
   use "akinsho/toggleterm.nvim"
   use {
     "ibhagwan/fzf-lua",
@@ -94,13 +94,15 @@ require("packer").startup(function(user)
       })
     end
   }
-  use {
-    "nvim-lualine/lualine.nvim",
-    requires = {
-      "nvim-tree/nvim-web-devicons",
-      opt = true
-    }
-  }
+  -- use {
+  --   "nvim-lualine/lualine.nvim",
+  --   requires = {
+  --     "nvim-tree/nvim-web-devicons",
+  --     opt = true
+  --   }
+  -- }
+  use {'akinsho/bufferline.nvim', tag = "*", requires = 'nvim-tree/nvim-web-devicons'}
+  use("tiagovla/scope.nvim")
   -- Auto close tag
   use "windwp/nvim-ts-autotag"
 
@@ -129,6 +131,9 @@ require("packer").startup(function(user)
     end
   }
 end)
+
+require("bufferline").setup{}
+require("scope").setup({}):
 
 -- Showing IDE like blank line.
 require("indent_blankline").setup {
@@ -169,7 +174,7 @@ require("nvim-tree").setup({
   sort_by = "case_sensitive",
   update_focused_file = {
     enable = true,
-    update_cwd = true,
+    update_cwd = true
   },
   renderer = {
     -- group_empty = true
@@ -286,67 +291,79 @@ require("illuminate").configure({
 })
 
 -- Statusline
-require("lualine").setup {
-  options = {
-    icons_enabled = true,
-    theme = "vscode",
-    component_separators = "",
-    section_separators = {
-      left = "",
-      right = ""
-    },
-    disabled_filetypes = {
-      statusline = {"packer", "NvimTree"},
-      winbar = {"packer", "NvimTree"}
-    },
-    refresh = {
-      statusline = 1000,
-      tabline = 1000,
-      winbar = 1000
-    }
-  },
-  sections = {
-    lualine_a = {"mode"},
-    lualine_b = {"branch", "diff"},
-    lualine_c = {"filename"},
-    lualine_x = {"filetype"},
-    lualine_y = {"progress"},
-    lualine_z = {"location"}
-  },
-  inactive_sections = {
-    lualine_a = {},
-    lualine_b = {},
-    lualine_c = {"filename"},
-    lualine_x = {"location"},
-    lualine_y = {},
-    lualine_z = {}
-  },
-  tabline = {
-    -- lualine_a = {},
-    -- lualine_b = {},
-    lualine_a = {{
-      "tabs",
-      use_mode_colors = true,
-      tabs_color = {
-        -- Same values as the general color option can be used here.
-      }
-    }},
-    lualine_b = {{
-      "filename",
-      path = 1,
-      file_status = true
-    }},
-    lualine_c = {
-      -- "buffers"
-    },
-    lualine_x = {},
-    lualine_y = {},
-    lualine_z = {}
-  },
-  winbar = {},
-  inactive_winbar = {},
-  extensions = {}
-}
+-- require("lualine").setup {
+--   options = {
+--     icons_enabled = true,
+--     theme = "vscode",
+--     component_separators = "",
+--     section_separators = {
+--       left = "",
+--       right = ""
+--     },
+--     disabled_filetypes = {
+--       statusline = {"packer", "NvimTree"},
+--       winbar = {"packer", "NvimTree"}
+--     },
+--     refresh = {
+--       statusline = 1000,
+--       tabline = 1000,
+--       winbar = 1000
+--     }
+--   },
+--   sections = {
+--     lualine_a = {"mode"},
+--     lualine_b = {"branch", "diff"},
+--     lualine_c = {{
+--       "filename",
+--       path = 1,
+--       file_status = true
+--     }},
+--     lualine_x = {"filetype"},
+--     lualine_y = {"progress"},
+--     lualine_z = {"location"}
+--   },
+--   inactive_sections = {
+--     lualine_a = {},
+--     lualine_b = {},
+--     lualine_c = {{
+--       "filename",
+--       path = 1,
+--       file_status = true
+--     }},
+--     lualine_x = {"location"},
+--     lualine_y = {},
+--     lualine_z = {}
+--   },
+--   tabline = {
+--     -- lualine_a = {},
+--     -- lualine_b = {},
+--     -- lualine_a = {{
+--     --   "tabs",
+--     --   use_mode_colors = true,
+--     --   tabs_color = {
+--     --     -- Same values as the general color option can be used here.
+--     --   }
+--     -- }},
+--     lualine_a = {{
+--       "buffers",
+--       use_mode_colors = true
+--     }},
+--     lualine_b = {},
+--     lualine_x = {},
+--     lualine_y = {},
+--     lualine_z = {},
+--     -- lualine_z = {{
+--     --   "tabs",
+--     --   use_mode_colors = true,
+--     --   tabs_color = {
+--     --     -- Same values as the general color option can be used here.
+--     --   }
+--     -- }}
+--   },
+--   winbar = {},
+--   inactive_winbar = {},
+--   extensions = {}
+-- }
 
 -- Autocomplete: cmp
 local cmp = require "cmp"
@@ -564,12 +581,6 @@ dap.configurations.go = {{
 
 -- Vanilla Binding
 map("n", "tp", ":noh<CR>", {
-  silent = true
-})
-map("n", "tn", ":tabnew<CR>", {
-  silent = true
-})
-map("n", "tc", ":tabc<CR>", {
   silent = true
 })
 
