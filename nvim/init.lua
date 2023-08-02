@@ -94,18 +94,11 @@ require("packer").startup(function(user)
       })
     end
   }
-  -- use {
-  --   "nvim-lualine/lualine.nvim",
-  --   requires = {
-  --     "nvim-tree/nvim-web-devicons",
-  --     opt = true
-  --   }
-  -- }
+  -- Bufferline and Scope
   use {'akinsho/bufferline.nvim', tag = "*", requires = 'nvim-tree/nvim-web-devicons'}
   use("tiagovla/scope.nvim")
   -- Auto close tag
   use "windwp/nvim-ts-autotag"
-
   -- Auto pairs: nvim-autopairs
   use {
     "windwp/nvim-autopairs",
@@ -132,17 +125,18 @@ require("packer").startup(function(user)
   }
 end)
 
-require("bufferline").setup{}
-require("scope").setup({}):
+---------------------------
+-- CUSTOM VANILLA BINDING
+---------------------------
+map("n", "tp", ":noh<CR>", {
+  silent = true
+})
 
--- Showing IDE like blank line.
-require("indent_blankline").setup {
-  show_end_of_line = true,
-  space_char_blankline = " ",
-  show_current_context = true,
-  show_current_context_start = true
-}
-
+---------------------------
+-- TEXT EDITOR FEATURES:
+-- FUZZY SEARCH, DIRECTORY
+-- LIST & TERMINAL
+---------------------------
 -- Terminal
 require"toggleterm".setup {
   size = 20,
@@ -150,7 +144,6 @@ require"toggleterm".setup {
   shade_terminals = true,
   direction = "float"
 }
-
 -- Fuzzy Search: fzf-lua
 require"fzf-lua".setup {
   -- fzf_bin = "sk"
@@ -168,7 +161,6 @@ vim.api.nvim_set_keymap("n", "<C-a>", "<cmd>lua require('fzf-lua').buffers()<CR>
   noremap = true,
   silent = false
 })
-
 -- Files tree.
 require("nvim-tree").setup({
   sort_by = "case_sensitive",
@@ -198,7 +190,13 @@ map("n", "tf", ":NvimTreeFindFile <CR>", {
   silent = true
 })
 
--- Theme
+---------------------------
+-- UI THEME
+---------------------------
+-- Buffer UI
+require("bufferline").setup{}
+require("scope").setup({})
+-- VSCode theme
 local c = require("vscode.colors").get_colors()
 require("vscode").setup({
   -- Alternatively set style in setup
@@ -230,6 +228,16 @@ require("vscode").setup({
 })
 require("vscode").load()
 
+---------------------------
+-- HIGHLIGHTER & TREESITTER
+---------------------------
+-- Showing IDE like blank line.
+require("indent_blankline").setup {
+  show_end_of_line = true,
+  space_char_blankline = " ",
+  show_current_context = true,
+  show_current_context_start = true
+}
 -- Highlighter
 require"nvim-treesitter.configs".setup {
   ensure_installed = {"go", "rust"},
@@ -248,7 +256,6 @@ require"nvim-treesitter.configs".setup {
     enable = true
   }
 }
-
 -- Illuminate tag highlight.
 require("illuminate").configure({
   -- providers: provider used to get references in the buffer, ordered by priority
@@ -290,209 +297,9 @@ require("illuminate").configure({
   min_count_to_highlight = 1
 })
 
--- Statusline
--- require("lualine").setup {
---   options = {
---     icons_enabled = true,
---     theme = "vscode",
---     component_separators = "",
---     section_separators = {
---       left = "",
---       right = ""
---     },
---     disabled_filetypes = {
---       statusline = {"packer", "NvimTree"},
---       winbar = {"packer", "NvimTree"}
---     },
---     refresh = {
---       statusline = 1000,
---       tabline = 1000,
---       winbar = 1000
---     }
---   },
---   sections = {
---     lualine_a = {"mode"},
---     lualine_b = {"branch", "diff"},
---     lualine_c = {{
---       "filename",
---       path = 1,
---       file_status = true
---     }},
---     lualine_x = {"filetype"},
---     lualine_y = {"progress"},
---     lualine_z = {"location"}
---   },
---   inactive_sections = {
---     lualine_a = {},
---     lualine_b = {},
---     lualine_c = {{
---       "filename",
---       path = 1,
---       file_status = true
---     }},
---     lualine_x = {"location"},
---     lualine_y = {},
---     lualine_z = {}
---   },
---   tabline = {
---     -- lualine_a = {},
---     -- lualine_b = {},
---     -- lualine_a = {{
---     --   "tabs",
---     --   use_mode_colors = true,
---     --   tabs_color = {
---     --     -- Same values as the general color option can be used here.
---     --   }
---     -- }},
---     lualine_a = {{
---       "buffers",
---       use_mode_colors = true
---     }},
---     lualine_b = {},
---     lualine_x = {},
---     lualine_y = {},
---     lualine_z = {},
---     -- lualine_z = {{
---     --   "tabs",
---     --   use_mode_colors = true,
---     --   tabs_color = {
---     --     -- Same values as the general color option can be used here.
---     --   }
---     -- }}
---   },
---   winbar = {},
---   inactive_winbar = {},
---   extensions = {}
--- }
-
--- Autocomplete: cmp
-local cmp = require "cmp"
-cmp.setup({
-  snippet = {
-    -- REQUIRED - you must specify a snippet engine
-    expand = function(args)
-      vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-    end
-  },
-  window = {
-    completion = cmp.config.window.bordered(),
-    documentation = cmp.config.window.bordered()
-  },
-  mapping = cmp.mapping.preset.insert({
-    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-    ["<C-f>"] = cmp.mapping.scroll_docs(4),
-    ["<C-Space>"] = cmp.mapping.complete(),
-    ["<C-e>"] = cmp.mapping.abort(),
-    ["<CR>"] = cmp.mapping.confirm({
-      select = true
-    }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-    ["<Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif vim.fn["vsnip#available"](1) == 1 then
-        feedkey("<Plug>(vsnip-expand-or-jump)", "")
-      elseif has_words_before() then
-        cmp.complete()
-      else
-        fallback() -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
-      end
-    end, {"i", "s"}),
-
-    ["<S-Tab>"] = cmp.mapping(function()
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif vim.fn["vsnip#jumpable"](-1) == 1 then
-        feedkey("<Plug>(vsnip-jump-prev)", "")
-      end
-    end, {"i", "s"})
-  }),
-  sources = cmp.config.sources({{
-    name = "nvim_lsp"
-  }, {
-    name = "vsnip"
-  } -- For vsnip users.
-  }, {{
-    name = "buffer"
-  }})
-})
-
--- Set configuration for specific filetype.
-cmp.setup.filetype("gitcommit", {
-  sources = cmp.config.sources({{
-    name = "cmp_git"
-  } -- You can specify the `cmp_git` source if you were installed it.
-  }, {{
-    name = "buffer"
-  }})
-})
-
--- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
-cmp.setup.cmdline({"/", "?"}, {
-  mapping = cmp.mapping.preset.cmdline(),
-  sources = {{
-    name = "buffer"
-  }}
-})
-
--- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
-cmp.setup.cmdline(":", {
-  mapping = cmp.mapping.preset.cmdline(),
-  sources = cmp.config.sources({{
-    name = "path"
-  }}, {{
-    name = "cmdline"
-  }})
-})
-
--- LSP
--- Setup language servers.
-local lspconfig = require("lspconfig")
-local util = require("lspconfig/util")
-
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
--- JavaScript TypeScript LSP 
-lspconfig.tsserver.setup {
-  capabilities = capabilities
-}
--- Golang LSP
-lspconfig.gopls.setup {
-  capabilities = capabilities,
-  cmd = {"gopls", "serve"},
-  filetypes = {"go", "gomod"},
-  root_dir = util.root_pattern("go.work", "go.mod", ".git"),
-  settings = {
-    gopls = {
-      analyses = {
-        unusedparams = true
-      },
-      staticcheck = true
-    }
-  }
-}
--- Python LSP
-lspconfig.pyright.setup {
-  capabilities = capabilities
-}
--- CPP LSP
-lspconfig.clangd.setup {
-  capabilities = capabilities
-}
--- Rust LSP
-lspconfig.rust_analyzer.setup {
-  capabilities = capabilities,
-  settings = {
-    ["rust-analyzer"] = {
-      diagnostics = {
-        enable = false
-      }
-    }
-  }
-}
-
--- Auto pairs and autocomplete integration.
-local cmp_autopairs = require("nvim-autopairs.completion.cmp")
-cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
-
+---------------------------
+-- DEBUGGER
+---------------------------
 -- Debuggers Configuration.
 vim.keymap.set("n", "<leader>b", function()
   require("dap").toggle_breakpoint()
@@ -500,7 +307,6 @@ end)
 vim.keymap.set("n", "F5", function()
   require("dap").continue()
 end)
-
 -- Debugger Setup using DAP
 local dap = require("dap")
 dap.adapters.lldb = {
@@ -579,18 +385,138 @@ dap.configurations.go = {{
   program = "./${relativeFileDirname}"
 }}
 
--- Vanilla Binding
-map("n", "tp", ":noh<CR>", {
-  silent = true
+---------------------------
+-- AUTOCOMPLETE & LSP
+---------------------------
+-- Autocomplete: cmp
+local cmp = require "cmp"
+cmp.setup({
+  snippet = {
+    -- REQUIRED - you must specify a snippet engine
+    expand = function(args)
+      vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+    end
+  },
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered()
+  },
+  mapping = cmp.mapping.preset.insert({
+    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+    ["<C-f>"] = cmp.mapping.scroll_docs(4),
+    ["<C-Space>"] = cmp.mapping.complete(),
+    ["<C-e>"] = cmp.mapping.abort(),
+    ["<CR>"] = cmp.mapping.confirm({
+      select = true
+    }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    ["<Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif vim.fn["vsnip#available"](1) == 1 then
+        feedkey("<Plug>(vsnip-expand-or-jump)", "")
+      elseif has_words_before() then
+        cmp.complete()
+      else
+        fallback() -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
+      end
+    end, {"i", "s"}),
+
+    ["<S-Tab>"] = cmp.mapping(function()
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif vim.fn["vsnip#jumpable"](-1) == 1 then
+        feedkey("<Plug>(vsnip-jump-prev)", "")
+      end
+    end, {"i", "s"})
+  }),
+  sources = cmp.config.sources({{
+    name = "nvim_lsp"
+  }, {
+    name = "vsnip"
+  } -- For vsnip users.
+  }, {{
+    name = "buffer"
+  }})
+})
+-- Set configuration for specific filetype.
+cmp.setup.filetype("gitcommit", {
+  sources = cmp.config.sources({{
+    name = "cmp_git"
+  } -- You can specify the `cmp_git` source if you were installed it.
+  }, {{
+    name = "buffer"
+  }})
 })
 
+-- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline({"/", "?"}, {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = {{
+    name = "buffer"
+  }}
+})
+-- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline(":", {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = cmp.config.sources({{
+    name = "path"
+  }}, {{
+    name = "cmdline"
+  }})
+})
+-- LSP
+-- Setup language servers.
+local lspconfig = require("lspconfig")
+local util = require("lspconfig/util")
+
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+-- JavaScript TypeScript LSP 
+lspconfig.tsserver.setup {
+  capabilities = capabilities
+}
+-- Golang LSP
+lspconfig.gopls.setup {
+  capabilities = capabilities,
+  cmd = {"gopls", "serve"},
+  filetypes = {"go", "gomod"},
+  root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+  settings = {
+    gopls = {
+      analyses = {
+        unusedparams = true
+      },
+      staticcheck = true
+    }
+  }
+}
+-- Python LSP
+lspconfig.pyright.setup {
+  capabilities = capabilities
+}
+-- CPP LSP
+lspconfig.clangd.setup {
+  capabilities = capabilities
+}
+-- Rust LSP
+lspconfig.rust_analyzer.setup {
+  capabilities = capabilities,
+  settings = {
+    ["rust-analyzer"] = {
+      diagnostics = {
+        enable = false
+      }
+    }
+  }
+}
+-- Auto pairs and autocomplete integration.
+local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
 -- Native LSP Mapping
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
 vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist)
-
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
 vim.api.nvim_create_autocmd("LspAttach", {
@@ -625,7 +551,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end, opts)
   end
 })
-
 -- Format on save
 vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = "*.go",
