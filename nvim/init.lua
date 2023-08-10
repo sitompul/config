@@ -24,7 +24,7 @@ vim.opt.signcolumn = "yes"
 vim.opt.showmode = true
 vim.opt.wrap = false
 vim.opt.smartcase = true
-vim.opt.cursorline = true
+-- vim.opt.cursorline = true
 vim.opt.ttyfast = true
 vim.opt.lazyredraw = true
 vim.opt.laststatus = 2
@@ -48,11 +48,11 @@ vim.g.loaded_netrwPlugin = 1
 vim.g.vscode_italic_comment = 1
 vim.g.nvim_tree_respect_buf_cwd = 1
 vim.cmd [[
-      hi CursorLine cterm=NONE ctermbg=236
-      hi VertSplit cterm=NONE ctermbg=245 ctermfg=245
-      hi Pmenu ctermbg=black ctermfg=white
-      hi ColorColumn guibg=#a9a9a9 ctermbg=236
-    ]]
+  hi CursorLine cterm=NONE ctermbg=236
+  hi VertSplit cterm=NONE ctermbg=245 ctermfg=245
+  hi Pmenu ctermbg=black ctermfg=white
+  hi ColorColumn guibg=#a9a9a9 ctermbg=236
+]]
 
 -- Extensions
 require("packer").startup(function(user)
@@ -65,7 +65,6 @@ require("packer").startup(function(user)
   use "RRethy/vim-illuminate"
   use "lukas-reineke/indent-blankline.nvim"
   use "Mofiqul/vscode.nvim"
-
   use "akinsho/toggleterm.nvim"
   use {
     "ibhagwan/fzf-lua",
@@ -95,7 +94,11 @@ require("packer").startup(function(user)
     end
   }
   -- Bufferline and Scope
-  use {'akinsho/bufferline.nvim', tag = "*", requires = 'nvim-tree/nvim-web-devicons'}
+  use {
+    "akinsho/bufferline.nvim",
+    tag = "*",
+    requires = "nvim-tree/nvim-web-devicons"
+  }
   use("tiagovla/scope.nvim")
   -- Auto close tag
   use "windwp/nvim-ts-autotag"
@@ -146,8 +149,18 @@ require"toggleterm".setup {
 }
 -- Fuzzy Search: fzf-lua
 require"fzf-lua".setup {
-  -- fzf_bin = "sk"
-  fzf_bin = "fzf"
+  fzf_bin = "sk",
+  -- fzf_bin = "fzf"
+  winopts = {
+    width = 0.85,
+    preview = {
+      layout = "vertical",
+      vertical = "down:60%",
+      winopts = {
+        number = false
+      }
+    }
+  }
 }
 vim.api.nvim_set_keymap("n", "<C-p>", "<cmd>lua require('fzf-lua').files()<CR>", {
   noremap = true,
@@ -194,7 +207,7 @@ map("n", "tf", ":NvimTreeFindFile <CR>", {
 -- UI THEME
 ---------------------------
 -- Buffer UI
-require("bufferline").setup{}
+require("bufferline").setup {}
 require("scope").setup({})
 -- VSCode theme
 local c = require("vscode.colors").get_colors()
