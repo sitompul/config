@@ -56,6 +56,11 @@ vim.cmd [[
 
 -- Extensions
 require("packer").startup(function(user)
+  use {
+    "nvim-telescope/telescope.nvim", tag = "0.1.x",
+    requires = { {"nvim-lua/plenary.nvim"} }
+  }
+  use { "nvim-telescope/telescope-fzf-native.nvim", run = "make" }
   use "wbthomason/packer.nvim"
   use "mfussenegger/nvim-dap"
   use {
@@ -66,13 +71,7 @@ require("packer").startup(function(user)
   use "lukas-reineke/indent-blankline.nvim"
   use "Mofiqul/vscode.nvim"
   use "akinsho/toggleterm.nvim"
-  use {
-    "ibhagwan/fzf-lua",
-    requires = {
-      "nvim-tree/nvim-web-devicons",
-      branch = "master"
-    }
-  }
+
   -- Surround
   use({
     "kylechui/nvim-surround",
@@ -99,7 +98,6 @@ require("packer").startup(function(user)
     tag = "*",
     requires = "nvim-tree/nvim-web-devicons"
   }
-  use("tiagovla/scope.nvim")
   -- Auto close tag
   use "windwp/nvim-ts-autotag"
   -- Auto pairs: nvim-autopairs
@@ -147,34 +145,62 @@ require"toggleterm".setup {
   shade_terminals = true,
   direction = "float"
 }
--- Fuzzy Search: fzf-lua
-require"fzf-lua".setup {
-  fzf_bin = "sk",
-  -- fzf_bin = "fzf"
-  winopts = {
-    width = 0.85,
-    preview = {
-      layout = "vertical",
-      vertical = "down:60%",
-      winopts = {
-        number = false
+
+-- Fuzzy Search
+local actions = require("telescope.actions")
+local builtin = require("telescope.builtin")
+require("telescope").setup{
+  defaults = {
+    -- Default configuration for telescope goes here:
+    -- config_key = value,
+    mappings = {
+      i = {
+        -- map actions.which_key to <C-h> (default: <C-/>)
+        -- actions.which_key shows the mappings for your picker,
+        -- e.g. git_{create, delete, ...}_branch for the git_branches picker
+        ["<C-h>"] = "which_key",
+        ["<esc>"] = actions.close
       }
+    }
+  },
+  pickers = {
+    -- Default configuration for builtin pickers goes here:
+    -- picker_name = {
+    --   picker_config_key = value,
+    --   ...
+    -- }
+    -- Now the picker_config_key will be applied every time you call this
+    -- builtin picker
+  },
+  extensions = {
+    fzf = {
+      fuzzy = true,                    -- false will only do exact matching
+      override_generic_sorter = true,  -- override the generic sorter
+      override_file_sorter = true,     -- override the file sorter
+      case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
+                                       -- the default case_mode is "smart_case"
     }
   }
 }
-vim.api.nvim_set_keymap("n", "<C-p>", "<cmd>lua require('fzf-lua').files()<CR>", {
+require("telescope").load_extension("fzf")
+vim.keymap.set("n", "<C-p>", builtin.find_files, {
   noremap = true,
   silent = true
 })
-vim.api.nvim_set_keymap("n", "<C-g>", "<cmd>lua require('fzf-lua').grep({ multiprocess=true })<CR>", {
+vim.keymap.set("n", "<C-g>", builtin.live_grep, {
   noremap = true,
-  silent = false
+  silent = true
 })
-vim.api.nvim_set_keymap("n", "<C-a>", "<cmd>lua require('fzf-lua').buffers()<CR>", {
+vim.keymap.set("n", "<leader>tt", builtin.treesitter, {
   noremap = true,
-  silent = false
+  silent = true
 })
--- Files tree.
+vim.keymap.set("n", "<C-a>", builtin.buffers, {
+  noremap = true,
+  silent = true
+})
+
+-- Syntax Highlighting
 require("nvim-tree").setup({
   sort_by = "case_sensitive",
   update_focused_file = {
@@ -208,7 +234,6 @@ map("n", "tf", ":NvimTreeFindFile <CR>", {
 ---------------------------
 -- Buffer UI
 require("bufferline").setup {}
-require("scope").setup({})
 -- VSCode theme
 local c = require("vscode.colors").get_colors()
 require("vscode").setup({
@@ -556,7 +581,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
     vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, opts)
     vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, opts)
     vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, opts)
-    vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+    vim.keymap.set("n", "gr", builtin.lsp_references, opts)
     vim.keymap.set("n", "<space>f", function()
       vim.lsp.buf.format {
         async = true
