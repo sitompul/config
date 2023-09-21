@@ -24,7 +24,6 @@ vim.opt.signcolumn = "yes"
 vim.opt.showmode = true
 vim.opt.wrap = false
 vim.opt.smartcase = true
--- vim.opt.cursorline = true
 vim.opt.ttyfast = true
 vim.opt.lazyredraw = true
 vim.opt.laststatus = 2
@@ -40,7 +39,7 @@ vim.opt.list = true
 vim.opt.mouse = "a"
 vim.opt.undolevels = 1000
 vim.opt.backspace = {"indent", "eol", "start"}
-vim.o.fillchars = "vert: ,eob: "
+vim.o.fillchars = "vert: ,eob:│"
 vim.opt.colorcolumn = "101"
 vim.opt.termguicolors = true
 vim.g.loaded_netrw = 1
@@ -92,12 +91,6 @@ require("packer").startup(function(user)
       })
     end
   }
-  -- Bufferline and Scope
-  use {
-    "akinsho/bufferline.nvim",
-    tag = "*",
-    requires = "nvim-tree/nvim-web-devicons"
-  }
   -- Auto close tag
   use "windwp/nvim-ts-autotag"
   -- Auto pairs: nvim-autopairs
@@ -132,6 +125,9 @@ end)
 map("n", "tp", ":noh<CR>", {
   silent = true
 })
+map("n", "<leader>tn", ":tabnew<CR>", {
+  silent = true
+})
 
 ---------------------------
 -- TEXT EDITOR FEATURES:
@@ -159,6 +155,7 @@ require("telescope").setup{
         -- actions.which_key shows the mappings for your picker,
         -- e.g. git_{create, delete, ...}_branch for the git_branches picker
         ["<C-h>"] = "which_key",
+        ["<C-d>"] = actions.delete_buffer,
         ["<esc>"] = actions.close
       }
     }
@@ -232,8 +229,6 @@ map("n", "tf", ":NvimTreeFindFile <CR>", {
 ---------------------------
 -- UI THEME
 ---------------------------
--- Buffer UI
-require("bufferline").setup {}
 -- VSCode theme
 local c = require("vscode.colors").get_colors()
 require("vscode").setup({
@@ -265,7 +260,6 @@ require("vscode").setup({
   }
 })
 require("vscode").load()
-
 ---------------------------
 -- HIGHLIGHTER & TREESITTER
 ---------------------------
@@ -502,11 +496,12 @@ cmp.setup.cmdline(":", {
     name = "cmdline"
   }})
 })
--- LSP
--- Setup language servers.
+
+---------------------------
+-- LANGUAGE CONFIGURATION
+---------------------------
 local lspconfig = require("lspconfig")
 local util = require("lspconfig/util")
-
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 -- JavaScript TypeScript LSP 
 lspconfig.tsserver.setup {
