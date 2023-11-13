@@ -35,7 +35,7 @@ vim.opt.tabstop = 2
 vim.opt.softtabstop = 2
 vim.opt.background = "dark"
 vim.opt.expandtab = true
-vim.opt.list = true
+vim.opt.list = false
 vim.opt.mouse = "a"
 vim.opt.undolevels = 1000
 vim.opt.backspace = {"indent", "eol", "start"}
@@ -81,7 +81,8 @@ require("packer").startup(function(user)
       })
     end
   })
-  use "nvim-tree/nvim-tree.lua"
+  use {"nvim-tree/nvim-tree.lua",
+  requires = {"nvim-tree/nvim-web-devicons"}}
   use {
     "nvim-treesitter/nvim-treesitter",
     requires = {"JoosepAlviste/nvim-ts-context-commentstring"},
@@ -263,13 +264,6 @@ require("vscode").load()
 ---------------------------
 -- HIGHLIGHTER & TREESITTER
 ---------------------------
--- Showing IDE like blank line.
-require("indent_blankline").setup {
-  show_end_of_line = true,
-  space_char_blankline = " ",
-  show_current_context = true,
-  show_current_context_start = true
-}
 -- Highlighter
 require"nvim-treesitter.configs".setup {
   ensure_installed = {"go", "rust"},
@@ -328,6 +322,9 @@ require("illuminate").configure({
   -- min_count_to_highlight: minimum number of matches required to perform highlighting
   min_count_to_highlight = 1
 })
+-- Showing IDE like blank line.
+require("ibl").setup()
+
 
 ---------------------------
 -- DEBUGGER
