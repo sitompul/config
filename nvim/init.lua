@@ -42,11 +42,15 @@ vim.opt.backspace = {"indent", "eol", "start"}
 vim.o.fillchars = "vert: ,eob:│"
 vim.opt.colorcolumn = "101"
 vim.opt.termguicolors = true
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.g.vscode_italic_comment = 1
 vim.g.nvim_tree_respect_buf_cwd = 1
+-- vim.g.skip_ts_context_commentstring_module = true
 vim.cmd [[
+  set foldlevelstart=99
   hi CursorLine cterm=NONE ctermbg=236
   hi VertSplit cterm=NONE ctermbg=245 ctermfg=245
   hi Pmenu ctermbg=black ctermfg=white
@@ -265,13 +269,14 @@ require("vscode").load()
 -- HIGHLIGHTER & TREESITTER
 ---------------------------
 -- Highlighter
+require("ts_context_commentstring").setup {}
 require"nvim-treesitter.configs".setup {
   ensure_installed = {"go", "rust"},
 
   auto_install = true,
-  context_commentstring = {
-    enable = true
-  },
+  -- context_commentstring = {
+  --   enable = true
+  -- },
   highlight = {
     enable = true
   },
