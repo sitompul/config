@@ -65,6 +65,11 @@ require("packer").startup(function(user)
   }
   use { "nvim-telescope/telescope-fzf-native.nvim", run = "make" }
   use "wbthomason/packer.nvim"
+  use "williamboman/mason.nvim"
+  use "williamboman/mason-lspconfig.nvim"
+  use "neovim/nvim-lspconfig"
+  use "mfussenegger/nvim-lint"
+  use "mhartington/formatter.nvim"
   use "mfussenegger/nvim-dap"
   use {
     "rcarriga/nvim-dap-ui",
@@ -112,7 +117,7 @@ require("packer").startup(function(user)
   use "hrsh7th/nvim-cmp"
   use "hrsh7th/cmp-vsnip"
   use "hrsh7th/vim-vsnip"
-  use "neovim/nvim-lspconfig"
+
   -- Comment
   use {
     "numToStr/Comment.nvim",
@@ -422,6 +427,10 @@ dap.configurations.go = {{
 ---------------------------
 -- AUTOCOMPLETE & LSP
 ---------------------------
+
+require("mason").setup()
+require("mason-lspconfig").setup()
+
 -- Autocomplete: cmp
 local cmp = require "cmp"
 cmp.setup({
