@@ -51,20 +51,18 @@ vim.g.nvim_tree_respect_buf_cwd = 1
 -- vim.g.skip_ts_context_commentstring_module = true
 vim.cmd [[
   set foldlevelstart=99
-  hi CursorLine cterm=NONE ctermbg=236
-  hi VertSplit cterm=NONE ctermbg=245 ctermfg=245
-  hi Pmenu ctermbg=black ctermfg=white
-  hi ColorColumn guibg=#a9a9a9 ctermbg=236
 ]]
 
 -- Extensions
 require("packer").startup(function(user)
+  use "wbthomason/packer.nvim"
+
   use {
     "nvim-telescope/telescope.nvim", tag = "0.1.x",
     requires = { {"nvim-lua/plenary.nvim"} }
   }
   use { "nvim-telescope/telescope-fzf-native.nvim", run = "make" }
-  use "wbthomason/packer.nvim"
+  use "Mofiqul/vscode.nvim"
   use "williamboman/mason.nvim"
   use "williamboman/mason-lspconfig.nvim"
   use "neovim/nvim-lspconfig"
@@ -77,7 +75,6 @@ require("packer").startup(function(user)
   }
   use "RRethy/vim-illuminate"
   use "lukas-reineke/indent-blankline.nvim"
-  use "Mofiqul/vscode.nvim"
   use "akinsho/toggleterm.nvim"
 
   -- Surround
@@ -239,37 +236,37 @@ map("n", "tf", ":NvimTreeFindFile <CR>", {
 ---------------------------
 -- UI THEME
 ---------------------------
--- VSCode theme
-local c = require("vscode.colors").get_colors()
-require("vscode").setup({
-  -- Alternatively set style in setup
-  style = "dark",
+local c = require('vscode.colors').get_colors()
+require('vscode').setup({
+    -- Alternatively set style in setup
+    -- style = 'light'
 
-  -- Enable transparent background
-  transparent = true,
+    -- Enable transparent background
+    transparent = true,
 
-  -- Enable italic comment
-  italic_comments = true,
+    -- Enable italic comment
+    italic_comments = true,
 
-  -- Disable nvim-tree background color
-  disable_nvimtree_bg = true,
+    -- Disable nvim-tree background color
+    disable_nvimtree_bg = true,
 
-  -- Override highlight groups (see ./lua/vscode/theme.lua)
-  group_overrides = {
-    -- this supports the same val table as vim.api.nvim_set_hl
-    -- use colors from this colorscheme by requiring vscode.colors!
-    Cursor = {
-      fg = c.vscDarkBlue,
-      bg = c.vscLightGreen,
-      bold = true
+    -- Override colors (see ./lua/vscode/colors.lua)
+    color_overrides = {
+        -- vscLineNumber = '#FFFFFF',
     },
-    VertSplit = {
-      fg = c.vscSplitDark,
-      bg = "#3A3A3A"
+
+    -- Override highlight groups (see ./lua/vscode/theme.lua)
+    group_overrides = {
+        -- this supports the same val table as vim.api.nvim_set_hl
+        -- use colors from this colorscheme by requiring vscode.colors!
+        Cursor = { fg=c.vscDarkBlue, bg=c.vscLightGreen, bold=true },
+        VertSplit = {fg=c.vscFront, bg=c.vscTabOutside},
+        StatusLineNC = {fg=c.vscFront, bg=c.vscTabOutside}
+
     }
-  }
 })
 require("vscode").load()
+
 ---------------------------
 -- HIGHLIGHTER & TREESITTER
 ---------------------------
@@ -333,7 +330,21 @@ require("illuminate").configure({
   min_count_to_highlight = 1
 })
 -- Showing IDE like blank line.
-require("ibl").setup()
+local highlight = {
+  "CursorColumn",
+  "Whitespace",
+}
+require("ibl").setup {
+  indent = { highlight = highlight },
+  scope = {
+    enabled = true,
+    show_start = true,
+    show_end = true,
+    injected_languages = false,
+    highlight = { "Function", "Label" },
+    priority = 500,
+  }
+}
 
 
 ---------------------------
