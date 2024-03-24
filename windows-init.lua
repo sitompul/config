@@ -1,5 +1,6 @@
 -- Install ripgrep, clang, fzf, git before proceed.
 
+-- Helpers function
 function map(mode, lhs, rhs, opts)
   local options = {
     noremap = true
@@ -9,13 +10,11 @@ function map(mode, lhs, rhs, opts)
   end
   vim.api.nvim_set_keymap(mode, lhs, rhs, options)
 end
-
 local has_words_before = function()
   unpack = unpack or table.unpack
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
   return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 end
-
 local feedkey = function(key, mode)
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
 end
@@ -27,7 +26,6 @@ vim.opt.showmode = true
 vim.opt.wrap = false
 vim.opt.smartcase = true
 vim.opt.ttyfast = true
-vim.opt.lazyredraw = true
 vim.opt.laststatus = 2
 vim.opt.autoindent = true
 vim.opt.shiftwidth = 2
@@ -43,90 +41,144 @@ vim.opt.undolevels = 1000
 vim.opt.backspace = {"indent", "eol", "start"}
 vim.o.fillchars = "vert: ,eob:│"
 vim.opt.colorcolumn = "101"
-vim.opt.termguicolors = true
 vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
 vim.g.vscode_italic_comment = 1
 vim.g.nvim_tree_respect_buf_cwd = 1
 vim.opt.showtabline = 2
--- vim.g.skip_ts_context_commentstring_module = true
+-- Required to use nvim-tree
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.opt.termguicolors = true
+-- Skip backwards compatibility routines and speed up loading.
+vim.g.skip_ts_context_commentstring_module = true
 vim.cmd [[
   set foldlevelstart=99
 ]]
 
--- Extensions
-require("packer").startup(function(user)
-  use "wbthomason/packer.nvim"
-
-  use { "ibhagwan/fzf-lua",
-    -- optional for icon support
-    requires = { "nvim-tree/nvim-web-devicons" }
-  }
-  use "Mofiqul/vscode.nvim"
-  use "williamboman/mason.nvim"
-  use "williamboman/mason-lspconfig.nvim"
-  use "neovim/nvim-lspconfig"
-  use "mfussenegger/nvim-lint"
-  use "mhartington/formatter.nvim"
-  use "mfussenegger/nvim-dap"
-  use {
-    "rcarriga/nvim-dap-ui",
-    requires = {" mfussenegger/nvim-dap"}
-  }
-  use "RRethy/vim-illuminate"
-  use "lukas-reineke/indent-blankline.nvim"
-  use "akinsho/toggleterm.nvim"
-
-  -- Surround
-  use({
-    "kylechui/nvim-surround",
-    tag = "*", -- Use for stability; omit to use `main` branch for the latest features
-    config = function()
-      require("nvim-surround").setup({
-        -- Configuration here, or leave empty to use defaults
-      })
-    end
+-- Initialize lazy package manager
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
   })
-  use {"nvim-tree/nvim-tree.lua",
-  requires = {"nvim-tree/nvim-web-devicons"}}
-  use {
+end
+vim.opt.rtp:prepend(lazypath)
+
+-- Load dependencies
+require("lazy").setup({
+  -- User Interface
+  -- VSCode Theme
+  "Mofiqul/vscode.nvim",
+  -- Recenter the command center, this will help by a LOT on ultrawide screen.
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = {
+      -- add any options here
+    },
+    dependencies = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      "MunifTanjim/nui.nvim",
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      "rcarriga/nvim-notify",
+      }
+  },
+  -- Lualine is required since the new UI will disable the UI for VIM mode.
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' }
+  },
+  -- Show code alignment like in modern IDE.
+  { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
+  'RRethy/vim-illuminate',
+  {
+    'nvim-tree/nvim-tree.lua',
+    dependencies = {
+      'nvim-tree/nvim-web-devicons',
+    },
+  },
+
+  {
+    "kylechui/nvim-surround",
+    version = "*", -- Use for stability; omit to use `main` branch for the latest features
+    event = "VeryLazy",
+    config = function()
+        require("nvim-surround").setup({
+            -- Configuration here, or leave empty to use defaults
+        })
+    end
+  },
+  {
     "nvim-treesitter/nvim-treesitter",
-    requires = {"JoosepAlviste/nvim-ts-context-commentstring"},
+    dependencies = {"JoosepAlviste/nvim-ts-context-commentstring"},
     run = function()
       require("nvim-treesitter.install").update({
         with_sync = true
       })
     end
-  }
-  -- Auto close tag
-  use "windwp/nvim-ts-autotag"
-  -- Auto pairs: nvim-autopairs
-  use {
+  },
+
+  -- LSP
+  "williamboman/mason.nvim",
+  "williamboman/mason-lspconfig.nvim",
+  "neovim/nvim-lspconfig",
+  "mfussenegger/nvim-lint",
+  "mhartington/formatter.nvim",
+
+  -- Debugger
+  "mfussenegger/nvim-dap",
+  "rcarriga/nvim-dap-ui",
+
+  -- Autocomplete
+  "hrsh7th/cmp-nvim-lsp",
+  "hrsh7th/cmp-buffer",
+  "hrsh7th/cmp-path",
+  "hrsh7th/cmp-cmdline",
+  "hrsh7th/nvim-cmp",
+  "hrsh7th/cmp-vsnip",
+  "hrsh7th/vim-vsnip",
+
+  -- Auto close tag and pair
+  "windwp/nvim-ts-autotag",
+  {
     "windwp/nvim-autopairs",
     config = function()
       require("nvim-autopairs").setup {}
     end
-  }
-  use "hrsh7th/cmp-nvim-lsp"
-  use "hrsh7th/cmp-buffer"
-  use "hrsh7th/cmp-path"
-  use "hrsh7th/cmp-cmdline"
-  use "hrsh7th/nvim-cmp"
-  use "hrsh7th/cmp-vsnip"
-  use "hrsh7th/vim-vsnip"
-
-  -- Comment
-  use {
+  },
+  {
     "numToStr/Comment.nvim",
     config = function()
       require("Comment").setup({
         pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook()
       })
     end
-  }
-end)
+  },
+
+  -- Debugger
+  -- Fuzzy Search and Grep.
+  {
+    "ibhagwan/fzf-lua",
+    -- optional for icon support
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require('fzf-lua').setup({
+        files = { cmd = 'rg --files' }
+      })
+    end
+  },
+
+  -- Debugging and Terminal.
+  {'akinsho/toggleterm.nvim', version = "*", config = true},
+})
 
 ---------------------------
 -- CUSTOM VANILLA BINDING
@@ -135,37 +187,6 @@ map("n", "tp", ":noh<CR>", {
   silent = true
 })
 map("n", "<leader>tn", ":tabnew<CR>", {
-  silent = true
-})
-
----------------------------
--- TEXT EDITOR FEATURES:
--- FUZZY SEARCH, DIRECTORY
--- LIST & TERMINAL
----------------------------
--- Terminal
-require"toggleterm".setup {
-  size = 20,
-  open_mapping = [[<c-\>]],
-  shade_terminals = true,
-  direction = "float"
-}
-
--- Fuzzy Search
-
-vim.keymap.set("n", "<c-P>",
-  "<cmd>lua require('fzf-lua').files()<CR>", { silent = true })
-
-vim.keymap.set("n", "<C-g>", "<cmd>lua require('fzf-lua').live_grep()<CR>", {
-  noremap = true,
-  silent = true
-})
-vim.keymap.set("n", "<leader>tt", "<cmd>lua require('fzf-lua').loclist()<CR>", {
-  noremap = true,
-  silent = true
-})
-vim.keymap.set("n", "<C-a>", "<cmd>lua require('fzf-lua').buffers()<CR>", {
-  noremap = true,
   silent = true
 })
 
@@ -232,11 +253,69 @@ require('vscode').setup({
 })
 require("vscode").load()
 
----------------------------
--- HIGHLIGHTER & TREESITTER
----------------------------
--- Highlighter
-require("ts_context_commentstring").setup {}
+require('lualine').setup {
+  options = {
+    icons_enabled = true,
+    theme = 'vscode',
+    component_separators = { left = '', right = ''},
+    section_separators = { left = '', right = ''},
+    disabled_filetypes = {
+      statusline = {},
+      winbar = {},
+    },
+    ignore_focus = {},
+    always_divide_middle = true,
+    globalstatus = false,
+    refresh = {
+      statusline = 1000,
+      tabline = 1000,
+      winbar = 1000,
+    }
+  },
+  sections = {
+    lualine_a = {'mode'},
+    lualine_b = {'branch', 'diff', 'diagnostics'},
+    lualine_c = {'filename'},
+    lualine_x = {'encoding', 'fileformat', 'filetype'},
+    lualine_y = {'progress'},
+    lualine_z = {'location'}
+  },
+  inactive_sections = {
+    lualine_a = {},
+    lualine_b = {},
+    lualine_c = {'filename'},
+    lualine_x = {'location'},
+    lualine_y = {},
+    lualine_z = {}
+  },
+  tabline = {},
+  winbar = {},
+  inactive_winbar = {},
+  extensions = {}
+}
+require("noice").setup({
+  lsp = {
+    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+    override = {
+      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+      ["vim.lsp.util.stylize_markdown"] = true,
+      ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
+    },
+  },
+  -- you can enable a preset for easier configuration
+  presets = {
+    bottom_search = true, -- use a classic bottom cmdline for search
+    command_palette = true, -- position the cmdline and popupmenu together
+    long_message_to_split = true, -- long messages will be sent to a split
+    inc_rename = false, -- enables an input dialog for inc-rename.nvim
+    lsp_doc_border = false, -- add a border to hover docs and signature help
+  },
+})
+
+require('notify').setup ({
+  background_colour = "#000000"
+})
+
 require"nvim-treesitter.configs".setup {
   ensure_installed = {"go", "rust"},
 
@@ -254,6 +333,7 @@ require"nvim-treesitter.configs".setup {
     enable = true
   }
 }
+
 -- Illuminate tag highlight.
 require("illuminate").configure({
   -- providers: provider used to get references in the buffer, ordered by priority
@@ -294,6 +374,7 @@ require("illuminate").configure({
   -- min_count_to_highlight: minimum number of matches required to perform highlighting
   min_count_to_highlight = 1
 })
+
 -- Showing IDE like blank line.
 local highlight = {
   -- "CursorColumn",
@@ -312,98 +393,30 @@ require("ibl").setup {
 }
 
 
----------------------------
--- DEBUGGER
----------------------------
--- Debuggers Configuration.
-vim.keymap.set("n", "<leader>b", function()
-  require("dap").toggle_breakpoint()
-end)
-vim.keymap.set("n", "F5", function()
-  require("dap").continue()
-end)
--- Debugger Setup using DAP
-local dap = require("dap")
-dap.adapters.lldb = {
-  type = "executable",
-  command = "/usr/bin/lldb-vscode-14", -- Change this if the version of lldb is different.
-  name = "lldb"
+-- Fuzzy Search and Grep Search
+vim.keymap.set("n", "<c-P>", "<cmd>lua require('fzf-lua').files()<CR>", { silent = true })
+vim.keymap.set("n", "<C-g>", "<cmd>lua require('fzf-lua').live_grep()<CR>", {
+  noremap = true,
+  silent = true
+})
+vim.keymap.set("n", "<leader>tt", "<cmd>lua require('fzf-lua').loclist()<CR>", {
+  noremap = true,
+  silent = true
+})
+vim.keymap.set("n", "<C-a>", "<cmd>lua require('fzf-lua').buffers()<CR>", {
+  noremap = true,
+  silent = true
+})
+
+-- Terminal
+require"toggleterm".setup {
+  size = 20,
+  open_mapping = [[<c-\>]],
+  shade_terminals = true,
+  direction = "float"
 }
--- CPP Debugger
-dap.configurations.cpp = {
-  name = "Launch",
-  type = "lldb",
-  request = "launch",
-  program = function()
-    return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-  end,
-  cwd = "${workspaceFolder}"
-}
--- C Debugger
-dap.configurations.c = dap.configurations.cpp
--- Rust Debugger
-dap.configurations.rust = {
-  name = "Launch",
-  type = "lldb",
-  request = "launch",
-  program = function()
-    return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-  end,
-  cwd = "${workspaceFolder}",
-  initCommands = function()
-    -- Find out where to look for the pretty printer Python module
-    local rustc_sysroot = vim.fn.trim(vim.fn.system("rustc --print sysroot"))
 
-    local script_import = "command script import \"" .. rustc_sysroot .. "/lib/rustlib/etc/lldb_lookup.py\""
-    local commands_file = rustc_sysroot .. "/lib/rustlib/etc/lldb_commands"
-
-    local commands = {}
-    local file = io.open(commands_file, "r")
-    if file then
-
-      for line in file:lines() do
-        table.insert(commands, line)
-      end
-      file:close()
-    end
-
-    table.insert(commands, 1, script_import)
-    return commands
-  end
-}
--- Golang Debugger
-dap.adapters.delve = {
-  type = "server",
-  port = "${port}",
-  executable = {
-    command = "dlv",
-    args = {"dap", "-l", "127.0.0.1:${port}"}
-  }
-}
-dap.configurations.go = {{
-  type = "delve",
-  name = "Debug",
-  request = "launch",
-  program = "${file}"
-}, {
-  type = "delve",
-  name = "Debug test", -- configuration for debugging test files
-  request = "launch",
-  mode = "test",
-  program = "${file}"
-}, -- works with go.mod packages and sub packages 
-{
-  type = "delve",
-  name = "Debug test (go.mod)",
-  request = "launch",
-  mode = "test",
-  program = "./${relativeFileDirname}"
-}}
-
----------------------------
--- AUTOCOMPLETE & LSP
----------------------------
-
+-- Mason LSP, Debugger and Linter Package manager
 require("mason").setup()
 require("mason-lspconfig").setup()
 
@@ -490,7 +503,7 @@ cmp.setup.cmdline(":", {
 local lspconfig = require("lspconfig")
 local util = require("lspconfig/util")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
--- JavaScript TypeScript LSP 
+-- JavaScript TypeScript LSP
 lspconfig.tsserver.setup {
   capabilities = capabilities
 }
@@ -595,3 +608,88 @@ vim.api.nvim_create_autocmd("BufEnter", {
     end
   end,
 })
+
+-- Debuggers Configuration.
+vim.keymap.set("n", "<leader>b", function()
+  require("dap").toggle_breakpoint()
+end)
+vim.keymap.set("n", "F5", function()
+  require("dap").continue()
+end)
+-- Debugger Setup using DAP
+local dap = require("dap")
+dap.adapters.lldb = {
+  type = "executable",
+  command = "/usr/bin/lldb-vscode-14", -- Change this if the version of lldb is different.
+  name = "lldb"
+}
+-- CPP Debugger
+dap.configurations.cpp = {
+  name = "Launch",
+  type = "lldb",
+  request = "launch",
+  program = function()
+    return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+  end,
+  cwd = "${workspaceFolder}"
+}
+-- C Debugger
+dap.configurations.c = dap.configurations.cpp
+-- Rust Debugger
+dap.configurations.rust = {
+  name = "Launch",
+  type = "lldb",
+  request = "launch",
+  program = function()
+    return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+  end,
+  cwd = "${workspaceFolder}",
+  initCommands = function()
+    -- Find out where to look for the pretty printer Python module
+    local rustc_sysroot = vim.fn.trim(vim.fn.system("rustc --print sysroot"))
+
+    local script_import = "command script import \"" .. rustc_sysroot .. "/lib/rustlib/etc/lldb_lookup.py\""
+    local commands_file = rustc_sysroot .. "/lib/rustlib/etc/lldb_commands"
+
+    local commands = {}
+    local file = io.open(commands_file, "r")
+    if file then
+
+      for line in file:lines() do
+        table.insert(commands, line)
+      end
+      file:close()
+    end
+
+    table.insert(commands, 1, script_import)
+    return commands
+  end
+}
+-- Golang Debugger
+dap.adapters.delve = {
+  type = "server",
+  port = "${port}",
+  executable = {
+    command = "dlv",
+    args = {"dap", "-l", "127.0.0.1:${port}"}
+  }
+}
+dap.configurations.go = {{
+  type = "delve",
+  name = "Debug",
+  request = "launch",
+  program = "${file}"
+}, {
+  type = "delve",
+  name = "Debug test", -- configuration for debugging test files
+  request = "launch",
+  mode = "test",
+  program = "${file}"
+}, -- works with go.mod packages and sub packages
+{
+  type = "delve",
+  name = "Debug test (go.mod)",
+  request = "launch",
+  mode = "test",
+  program = "./${relativeFileDirname}"
+}}
