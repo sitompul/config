@@ -1,6 +1,21 @@
 -- Install ripgrep, clang, fzf, git before proceed.
 
 -- Helpers function
+function getOS()
+	-- ask LuaJIT first
+	if jit then
+		return jit.os
+	end
+
+	-- Unix, Linux variants
+	local fh,err = assert(io.popen("uname -o 2>/dev/null","r"))
+	if fh then
+		osname = fh:read()
+	end
+
+	return osname or "Windows"
+end
+
 function map(mode, lhs, rhs, opts)
   local options = {
     noremap = true
@@ -17,6 +32,11 @@ local has_words_before = function()
 end
 local feedkey = function(key, mode)
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
+end
+
+local shell = "bash"
+if getOS() == "Windows" then
+  shell = "pwsh.exe"
 end
 
 -- Options Configuration
@@ -88,7 +108,7 @@ require("lazy").setup({
       -- OPTIONAL:
       --   `nvim-notify` is only needed, if you want to use the notification view.
       --   If not available, we use `mini` as the fallback
-      "rcarriga/nvim-notify",
+      -- "rcarriga/nvim-notify",
       }
   },
   -- Lualine is required since the new UI will disable the UI for VIM mode.
@@ -257,11 +277,10 @@ require('lualine').setup {
   options = {
     icons_enabled = true,
     theme = 'vscode',
-    component_separators = { left = '', right = ''},
-    section_separators = { left = '', right = ''},
+    component_separators = { left = '', right = ''},
+    section_separators = { left = '', right = ''},
     disabled_filetypes = {
-      statusline = {},
-      winbar = {},
+      'NvimTree'
     },
     ignore_focus = {},
     always_divide_middle = true,
@@ -312,9 +331,9 @@ require("noice").setup({
   },
 })
 
-require('notify').setup ({
-  background_colour = "#000000"
-})
+-- require('notify').setup ({
+--   background_colour = "#000000"
+-- })
 
 require"nvim-treesitter.configs".setup {
   ensure_installed = {"go", "rust"},
@@ -408,10 +427,13 @@ vim.keymap.set("n", "<C-a>", "<cmd>lua require('fzf-lua').buffers()<CR>", {
   silent = true
 })
 
+
+
 -- Terminal
 require"toggleterm".setup {
   size = 20,
   open_mapping = [[<c-\>]],
+  shell = shell,
   shade_terminals = true,
   direction = "float"
 }
