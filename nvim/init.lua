@@ -213,7 +213,7 @@ require("nvim-tree").setup({
   sort_by = "case_sensitive",
   update_focused_file = {
     enable = true,
-    update_cwd = true
+    update_cwd = false
   },
   renderer = {
     -- group_empty = true
