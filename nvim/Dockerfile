@@ -1,6 +1,6 @@
 FROM alpine:3
 
-RUN app add --no-cache neovim git curl fzf ripgrep gcc musl-dev make g++ && \
+RUN app add --no-cache neovim git curl fzf ripgrep gcc musl-dev make g++ python3 && \
   mkdir -p /project
 
 COPY init.lua /root/.config/nvim/init.lua
