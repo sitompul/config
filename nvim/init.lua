@@ -42,7 +42,7 @@ end
 -- Options Configuration
 vim.opt.syntax = "enable"
 vim.opt.signcolumn = "yes"
-vim.opt.showmode = true
+vim.opt.showmode = false
 vim.opt.wrap = false
 vim.opt.smartcase = true
 vim.opt.ttyfast = true
@@ -137,11 +137,7 @@ require("lazy").setup({
   {
     "nvim-treesitter/nvim-treesitter",
     dependencies = {"JoosepAlviste/nvim-ts-context-commentstring"},
-    run = function()
-      require("nvim-treesitter.install").update({
-        with_sync = true
-      })
-    end
+    build = ":TSInstall go rust vim regex lua bash markdown markdown_inline",
   },
 
   -- LSP
@@ -333,24 +329,6 @@ require("noice").setup({
 --   background_colour = "#000000"
 -- })
 
-require"nvim-treesitter.configs".setup {
-  ensure_installed = {"go", "rust"},
-
-  auto_install = true,
-  -- context_commentstring = {
-  --   enable = true
-  -- },
-  highlight = {
-    enable = true
-  },
-  autotag = {
-    enable = true
-  },
-  indent = {
-    enable = true
-  }
-}
-
 -- Illuminate tag highlight.
 require("illuminate").configure({
   -- providers: provider used to get references in the buffer, ordered by priority
@@ -519,19 +497,21 @@ cmp.setup.cmdline(":", {
 ---------------------------
 -- LANGUAGE CONFIGURATION
 ---------------------------
-local lspconfig = require("lspconfig")
-local util = require("lspconfig/util")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
--- JavaScript TypeScript LSP
-lspconfig.tsserver.setup {
+
+-- Apply capabilities to all LSP servers via wildcard
+vim.lsp.config("*", {
   capabilities = capabilities
-}
+})
+
+-- JavaScript TypeScript LSP
+vim.lsp.config("ts_ls", {})
+
 -- Golang LSP
-lspconfig.gopls.setup {
-  capabilities = capabilities,
+vim.lsp.config("gopls", {
   cmd = {"gopls", "serve"},
   filetypes = {"go", "gomod"},
-  root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+  root_markers = {"go.work", "go.mod", ".git"},
   settings = {
     gopls = {
       analyses = {
@@ -540,18 +520,16 @@ lspconfig.gopls.setup {
       staticcheck = true
     }
   }
-}
+})
+
 -- Python LSP
-lspconfig.pyright.setup {
-  capabilities = capabilities
-}
+vim.lsp.config("pyright", {})
+
 -- CPP LSP
-lspconfig.clangd.setup {
-  capabilities = capabilities
-}
+vim.lsp.config("clangd", {})
+
 -- Rust LSP
-lspconfig.rust_analyzer.setup {
-  capabilities = capabilities,
+vim.lsp.config("rust_analyzer", {
   settings = {
     ["rust-analyzer"] = {
       diagnostics = {
@@ -559,7 +537,10 @@ lspconfig.rust_analyzer.setup {
       }
     }
   }
-}
+})
+
+-- Enable all configured LSP servers
+vim.lsp.enable({"ts_ls", "gopls", "pyright", "clangd", "rust_analyzer"})
 -- Auto pairs and autocomplete integration.
 local cmp_autopairs = require("nvim-autopairs.completion.cmp")
 cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
