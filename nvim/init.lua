@@ -1,5 +1,19 @@
 -- Install ripgrep, clang, fzf, git before proceed.
 
+-- Check for required dependencies
+local required_tools = {
+  ripgrep = "rg",
+  fzf = "fzf",
+  git = "git",
+  treesitter = "tree-sitter"
+}
+
+for name, cmd in pairs(required_tools) do
+  if vim.fn.executable(cmd) == 0 then
+    error("Required tool '" .. name .. "' ('" .. cmd .. "') is not installed. Please install it and try again.")
+  end
+end
+
 -- Helpers function
 function getOS()
 	-- ask LuaJIT first
