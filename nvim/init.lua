@@ -66,6 +66,19 @@ vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 vim.g.vscode_italic_comment = 1
 vim.g.nvim_tree_respect_buf_cwd = 1
 vim.opt.showtabline = 2
+vim.o.tabline = "%!v:lua.Tabline()"
+function Tabline()
+  local s = ""
+  for i = 1, vim.fn.tabpagenr("$") do
+    local hl = i == vim.fn.tabpagenr() and "%#TabLineSel#" or "%#TabLine#"
+    local bufnr = vim.fn.tabpagebuflist(i)[vim.fn.tabpagewinnr(i)]
+    local name = vim.fn.bufname(bufnr)
+    if name == "" then name = "[No Name]" end
+    name = vim.fn.fnamemodify(name, ":t")
+    s = s .. hl .. " %" .. i .. "T" .. name .. " "
+  end
+  return s .. "%#TabLineFill#"
+end
 -- Required to use nvim-tree
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
@@ -76,7 +89,7 @@ vim.o.foldlevelstart = 99
 
 -- Initialize lazy package manager
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
   vim.fn.system({
     "git",
     "clone",
@@ -137,14 +150,13 @@ require("lazy").setup({
 
   -- LSP
   "williamboman/mason.nvim",
-  "williamboman/mason-lspconfig.nvim",
   "neovim/nvim-lspconfig",
   "mfussenegger/nvim-lint",
   "mhartington/formatter.nvim",
 
   -- Debugger
   "mfussenegger/nvim-dap",
-  "rcarriga/nvim-dap-ui",
+  {"rcarriga/nvim-dap-ui", dependencies = {"nvim-neotest/nvim-nio"}},
 
   -- Autocomplete
   "hrsh7th/cmp-nvim-lsp",
@@ -156,7 +168,12 @@ require("lazy").setup({
   "hrsh7th/vim-vsnip",
 
   -- Auto close tag and pair
-  "windwp/nvim-ts-autotag",
+  {
+    "windwp/nvim-ts-autotag",
+    config = function()
+      require("nvim-ts-autotag").setup()
+    end
+  },
   {
     "windwp/nvim-autopairs",
     config = function()
@@ -186,7 +203,25 @@ require("lazy").setup({
   },
 
   -- Debugging and Terminal.
-  {'akinsho/toggleterm.nvim', version = "*", config = true},
+  {'akinsho/toggleterm.nvim', version = "*",
+    config = function()
+      require("toggleterm").setup {
+        size = 20,
+        open_mapping = [[<c-\>]],
+        shell = shell,
+        direction = "float",
+        on_open = function(term)
+          vim.api.nvim_buf_set_name(term.bufnr, "Terminal " .. term.id)
+        end,
+        winbar = {
+          enabled = true,
+          name_formatter = function(term)
+            return "Terminal " .. term.id
+          end,
+        },
+      }
+    end
+  },
 })
 
 ---------------------------
@@ -361,18 +396,8 @@ vim.keymap.set("n", "<C-a>", fzf.buffers, {
   silent = true
 })
 
--- Terminal
-require"toggleterm".setup {
-  size = 20,
-  open_mapping = [[<c-\>]],
-  shell = shell,
-  shade_terminals = true,
-  direction = "float"
-}
-
 -- Mason LSP, Debugger and Linter Package manager
 require("mason").setup()
-require("mason-lspconfig").setup()
 
 -- Autocomplete: cmp
 local cmp = require "cmp"
@@ -577,6 +602,11 @@ vim.keymap.set("n", "F5", function()
 end)
 -- Debugger Setup using DAP
 local dap = require("dap")
+local dapui = require("dapui")
+dapui.setup()
+dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
+dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
+dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
 dap.adapters.lldb = {
   type = "executable",
   command = "/usr/bin/lldb-vscode-14", -- Change this if the version of lldb is different.
