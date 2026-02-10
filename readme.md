@@ -2,4 +2,5 @@
 
 My simple dotfiles and personal config.
 
-## I'm using Fedora BTW
+## I'm using ~~Arch~~ ~~Fedora~~ Ubuntu BTW
+Hopefully this is the end of my distro hopping
