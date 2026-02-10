@@ -1,1 +1,0 @@
-sudo dnf install -y kitty golang-go g++ clang clang-tools-extra bear cmake ninja-build ocular transmission neovim docker ghostwriter obs-studio mpv steam epiphany chromium git vim-common skim ripgrep tmux unrar virt-manager java-latest-openjdk fsearch
