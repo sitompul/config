@@ -76,7 +76,7 @@ vim.opt.backspace = {"indent", "eol", "start"}
 vim.o.fillchars = "vert: ,eob:│"
 vim.opt.colorcolumn = "101"
 vim.opt.foldmethod = "expr"
-vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.g.vscode_italic_comment = 1
 vim.g.nvim_tree_respect_buf_cwd = 1
 vim.opt.showtabline = 2
@@ -211,9 +211,31 @@ require("lazy").setup({
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require('fzf-lua').setup({
-        files = { cmd = "rg --files --glob '!.*/**'" }
+        -- files = { cmd = "rg --files --glob '!.*/**'" }
       })
     end
+  },
+
+  -- AI Assistant
+  {
+    "olimorris/codecompanion.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    config = function()
+      require("codecompanion").setup({
+        strategies = {
+          chat = { adapter = "anthropic" },
+          inline = { adapter = "anthropic" },
+        },
+      })
+    end,
+    keys = {
+      { "<leader>cc", "<cmd>CodeCompanionChat Toggle<cr>", desc = "Toggle AI chat" },
+      { "<leader>ca", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "AI actions" },
+      { "<leader>ci", "<cmd>CodeCompanion<cr>", mode = { "n", "v" }, desc = "Inline AI assist" },
+    },
   },
 
   -- Debugging and Terminal.
@@ -627,7 +649,7 @@ dap.adapters.lldb = {
   name = "lldb"
 }
 -- CPP Debugger
-dap.configurations.cpp = {
+dap.configurations.cpp = {{
   name = "Launch",
   type = "lldb",
   request = "launch",
@@ -635,11 +657,11 @@ dap.configurations.cpp = {
     return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
   end,
   cwd = "${workspaceFolder}"
-}
+}}
 -- C Debugger
 dap.configurations.c = dap.configurations.cpp
 -- Rust Debugger
-dap.configurations.rust = {
+dap.configurations.rust = {{
   name = "Launch",
   type = "lldb",
   request = "launch",
@@ -667,7 +689,7 @@ dap.configurations.rust = {
     table.insert(commands, 1, script_import)
     return commands
   end
-}
+}}
 -- Golang Debugger
 dap.adapters.delve = {
   type = "server",
