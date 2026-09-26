@@ -39,15 +39,6 @@ function map(mode, lhs, rhs, opts)
   end
   vim.api.nvim_set_keymap(mode, lhs, rhs, options)
 end
-local has_words_before = function()
-  unpack = unpack or table.unpack
-  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
-end
-local feedkey = function(key, mode)
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
-end
-
 local shell = "bash"
 if getOS() == "Windows" then
   shell = "pwsh.exe"
@@ -172,14 +163,53 @@ require("lazy").setup({
   "mfussenegger/nvim-dap",
   {"rcarriga/nvim-dap-ui", dependencies = {"nvim-neotest/nvim-nio"}},
 
-  -- Autocomplete
-  "hrsh7th/cmp-nvim-lsp",
-  "hrsh7th/cmp-buffer",
-  "hrsh7th/cmp-path",
-  "hrsh7th/cmp-cmdline",
-  "hrsh7th/nvim-cmp",
-  "hrsh7th/cmp-vsnip",
-  "hrsh7th/vim-vsnip",
+  -- Completion: stable Blink releases with native Neovim snippets.
+  {
+    "saghen/blink.cmp",
+    version = "1.*",
+    dependencies = { "rafamadriz/friendly-snippets" },
+    opts = {
+      keymap = {
+        preset = "default",
+        ["<CR>"] = { "select_and_accept", "fallback" },
+        ["<C-e>"] = { "cancel", "fallback" },
+        ["<Tab>"] = {
+          "select_next",
+          "snippet_forward",
+          function(cmp)
+            local col = vim.api.nvim_win_get_cursor(0)[2]
+            local before = vim.api.nvim_get_current_line():sub(1, col)
+            if before:match("%S$") then return cmp.show() end
+          end,
+          "fallback",
+        },
+        ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+      },
+      snippets = { preset = "default" },
+      sources = {
+        default = { "lsp", "path", "snippets", "buffer" },
+        per_filetype = { gitcommit = { "buffer" } },
+      },
+      completion = {
+        list = { selection = { preselect = true, auto_insert = false } },
+        menu = { border = "rounded" },
+        documentation = { auto_show = true, window = { border = "rounded" } },
+        accept = { auto_brackets = { enabled = true } },
+      },
+      cmdline = {
+        enabled = true,
+        keymap = { preset = "cmdline" },
+        sources = function()
+          local mode = vim.fn.getcmdtype()
+          if mode == "/" or mode == "?" then return { "buffer" } end
+          if mode == ":" then return { "path", "cmdline" } end
+          return {}
+        end,
+        completion = { menu = { auto_show = true } },
+      },
+      fuzzy = { implementation = "prefer_rust_with_warning" },
+    },
+  },
 
   -- Auto close tag and pair
   {
@@ -336,11 +366,10 @@ require("vscode").load()
 
 require("noice").setup({
   lsp = {
-    -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+    -- Use Treesitter for LSP markdown rendering.
     override = {
       ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
       ["vim.lsp.util.stylize_markdown"] = true,
-      ["cmp.entry.get_documentation"] = true, -- requires hrsh7th/nvim-cmp
     },
   },
   -- you can enable a preset for easier configuration
@@ -435,87 +464,10 @@ vim.keymap.set("n", "<C-a>", fzf.buffers, {
 -- Mason LSP, Debugger and Linter Package manager
 require("mason").setup()
 
--- Autocomplete: cmp
-local cmp = require "cmp"
-cmp.setup({
-  snippet = {
-    -- REQUIRED - you must specify a snippet engine
-    expand = function(args)
-      vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-    end
-  },
-  window = {
-    completion = cmp.config.window.bordered(),
-    documentation = cmp.config.window.bordered()
-  },
-  mapping = cmp.mapping.preset.insert({
-    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-    ["<C-f>"] = cmp.mapping.scroll_docs(4),
-    ["<C-Space>"] = cmp.mapping.complete(),
-    ["<C-e>"] = cmp.mapping.abort(),
-    ["<CR>"] = cmp.mapping.confirm({
-      select = true
-    }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-    ["<Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif vim.fn["vsnip#available"](1) == 1 then
-        feedkey("<Plug>(vsnip-expand-or-jump)", "")
-      elseif has_words_before() then
-        cmp.complete()
-      else
-        fallback() -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
-      end
-    end, {"i", "s"}),
-
-    ["<S-Tab>"] = cmp.mapping(function()
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif vim.fn["vsnip#jumpable"](-1) == 1 then
-        feedkey("<Plug>(vsnip-jump-prev)", "")
-      end
-    end, {"i", "s"})
-  }),
-  sources = cmp.config.sources({{
-    name = "nvim_lsp"
-  }, {
-    name = "vsnip"
-  } -- For vsnip users.
-  }, {{
-    name = "buffer"
-  }})
-})
--- Set configuration for specific filetype.
-cmp.setup.filetype("gitcommit", {
-  sources = cmp.config.sources({{
-    name = "cmp_git"
-  } -- You can specify the `cmp_git` source if you were installed it.
-  }, {{
-    name = "buffer"
-  }})
-})
-
--- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
-cmp.setup.cmdline({"/", "?"}, {
-  mapping = cmp.mapping.preset.cmdline(),
-  sources = {{
-    name = "buffer"
-  }}
-})
--- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
-cmp.setup.cmdline(":", {
-  mapping = cmp.mapping.preset.cmdline(),
-  sources = cmp.config.sources({{
-    name = "path"
-  }}, {{
-    name = "cmdline"
-  }})
-})
-
 ---------------------------
 -- LANGUAGE CONFIGURATION
 ---------------------------
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
+local capabilities = require("blink.cmp").get_lsp_capabilities()
 
 -- Apply capabilities to all LSP servers via wildcard
 vim.lsp.config("*", {
@@ -559,9 +511,7 @@ vim.lsp.config("rust_analyzer", {
 
 -- Enable all configured LSP servers
 vim.lsp.enable({"ts_ls", "gopls", "pyright", "clangd", "rust_analyzer"})
--- Auto pairs and autocomplete integration.
-local cmp_autopairs = require("nvim-autopairs.completion.cmp")
-cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+-- Blink handles completion brackets; nvim-autopairs handles typed pairs.
 -- Native LSP Mapping
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
