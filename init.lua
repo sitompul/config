@@ -1,3 +1,6 @@
+-- Set the leader before loading plugins or defining mappings.
+vim.g.mapleader = " "
+
 -- Install ripgrep, clang, fzf, git before proceed.
 
 -- Check for required dependencies
@@ -49,6 +52,7 @@ vim.opt.syntax = "enable"
 vim.opt.signcolumn = "yes"
 vim.opt.showmode = false
 vim.opt.wrap = false
+vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.ttyfast = true
 vim.opt.laststatus = 2
@@ -116,7 +120,21 @@ require("lazy").setup({
     "folke/noice.nvim",
     event = "VeryLazy",
     opts = {
-      -- add any options here
+      lsp = {
+        -- Use Treesitter for LSP markdown rendering.
+        override = {
+          ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+          ["vim.lsp.util.stylize_markdown"] = true,
+        },
+      },
+      -- you can enable a preset for easier configuration
+      presets = {
+        bottom_search = true, -- use a classic bottom cmdline for search
+        command_palette = true, -- position the cmdline and popupmenu together
+        long_message_to_split = true, -- long messages will be sent to a split
+        inc_rename = false, -- enables an input dialog for inc-rename.nvim
+        lsp_doc_border = false, -- add a border to hover docs and signature help
+      },
     },
     dependencies = {
       -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
@@ -128,7 +146,21 @@ require("lazy").setup({
       }
   },
   -- Show code alignment like in modern IDE.
-  { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
+    opts = {
+      indent = { highlight = { "Whitespace" } },
+      scope = {
+        enabled = true,
+        show_start = true,
+        show_end = true,
+        injected_languages = false,
+        highlight = { "Function", "Label" },
+        priority = 500,
+      },
+    },
+  },
   'RRethy/vim-illuminate',
   {
     'nvim-tree/nvim-tree.lua',
@@ -149,8 +181,29 @@ require("lazy").setup({
   },
   {
     "nvim-treesitter/nvim-treesitter",
+    lazy = false,
     dependencies = {"JoosepAlviste/nvim-ts-context-commentstring"},
-    build = ":TSInstall go rust vim regex lua bash markdown markdown_inline",
+    build = ":TSUpdate",
+    config = function()
+      -- Installation is a no-op for parsers that are already installed.
+      require("nvim-treesitter").install({
+        "go", "gomod", "gowork", "gosum", "rust", "python", "c", "cpp",
+        "javascript", "typescript", "tsx", "vim", "vimdoc", "regex", "lua",
+        "bash", "markdown", "markdown_inline",
+      })
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("UserTreesitterHighlight", { clear = true }),
+        pattern = {
+          "go", "gomod", "gowork", "gosum", "rust", "python", "c", "cpp",
+          "javascript", "javascriptreact", "typescript", "typescriptreact",
+          "vim", "help", "regex", "lua", "sh", "bash", "markdown",
+        },
+        callback = function(ev)
+          -- Keep editing usable while a parser is not installed yet.
+          pcall(vim.treesitter.start, ev.buf)
+        end,
+      })
+    end,
   },
 
   -- LSP
@@ -263,7 +316,7 @@ require("lazy").setup({
     end,
     keys = {
       { "<leader>cc", "<cmd>CodeCompanionChat Toggle<cr>", desc = "Toggle AI chat" },
-      { "<leader>ca", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "AI actions" },
+      { "<leader>aa", "<cmd>CodeCompanionActions<cr>", mode = { "n", "v" }, desc = "AI actions" },
       { "<leader>ci", "<cmd>CodeCompanion<cr>", mode = { "n", "v" }, desc = "Inline AI assist" },
     },
   },
@@ -363,25 +416,6 @@ require('vscode').setup({
 })
 require("vscode").load()
 
-
-require("noice").setup({
-  lsp = {
-    -- Use Treesitter for LSP markdown rendering.
-    override = {
-      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-      ["vim.lsp.util.stylize_markdown"] = true,
-    },
-  },
-  -- you can enable a preset for easier configuration
-  presets = {
-    bottom_search = true, -- use a classic bottom cmdline for search
-    command_palette = true, -- position the cmdline and popupmenu together
-    long_message_to_split = true, -- long messages will be sent to a split
-    inc_rename = false, -- enables an input dialog for inc-rename.nvim
-    lsp_doc_border = false, -- add a border to hover docs and signature help
-  },
-})
-
 -- require('notify').setup ({
 --   background_colour = "#000000"
 -- })
@@ -426,24 +460,6 @@ require("illuminate").configure({
   -- min_count_to_highlight: minimum number of matches required to perform highlighting
   min_count_to_highlight = 1
 })
-
--- Showing IDE like blank line.
-local highlight = {
-  -- "CursorColumn",
-  "Whitespace",
-}
-require("ibl").setup {
-  indent = { highlight = highlight },
-  scope = {
-    enabled = true,
-    show_start = true,
-    show_end = true,
-    injected_languages = false,
-    highlight = { "Function", "Label" },
-    priority = 500,
-  }
-}
-
 
 -- Fuzzy Search and Grep Search
 local fzf = require('fzf-lua')
@@ -499,15 +515,7 @@ vim.lsp.config("pyright", {})
 vim.lsp.config("clangd", {})
 
 -- Rust LSP
-vim.lsp.config("rust_analyzer", {
-  settings = {
-    ["rust-analyzer"] = {
-      diagnostics = {
-        enable = false
-      }
-    }
-  }
-})
+vim.lsp.config("rust_analyzer", {})
 
 -- Enable all configured LSP servers
 vim.lsp.enable({"ts_ls", "gopls", "pyright", "clangd", "rust_analyzer"})
@@ -554,20 +562,35 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end, opts)
   end
 })
--- Format on save
+-- Organize Go imports and format before the file is written.
 vim.api.nvim_create_autocmd("BufWritePre", {
+  group = vim.api.nvim_create_augroup("UserGoFormat", { clear = true }),
   pattern = "*.go",
-  callback = function()
-    vim.lsp.buf.format {
-      async = false
-    }
-    vim.lsp.buf.code_action({
-      context = {
-        only = {"source.organizeImports"}
+  callback = function(ev)
+    local client = vim.lsp.get_clients({ bufnr = ev.buf, name = "gopls" })[1]
+    if not client then return end
+
+    local params = {
+      textDocument = vim.lsp.util.make_text_document_params(ev.buf),
+      range = {
+        start = { line = 0, character = 0 },
+        ["end"] = { line = 0, character = 0 },
       },
-      apply = true
-    })
-  end
+      context = { only = { "source.organizeImports" }, diagnostics = {} },
+    }
+    local response, err = client:request_sync("textDocument/codeAction", params, 3000, ev.buf)
+    if not response or response.err then
+      vim.notify("Go import organization failed: " .. vim.inspect(err or (response and response.err) or "request timed out"), vim.log.levels.WARN)
+    else
+      for _, action in ipairs(response.result or {}) do
+        if not action.disabled and action.edit then
+          vim.lsp.util.apply_workspace_edit(action.edit, client.offset_encoding)
+        end
+      end
+    end
+
+    vim.lsp.buf.format({ bufnr = ev.buf, id = client.id, async = false, timeout_ms = 3000 })
+  end,
 })
 vim.api.nvim_create_autocmd("BufEnter", {
   callback = function()
@@ -583,9 +606,9 @@ vim.api.nvim_create_autocmd("BufEnter", {
 vim.keymap.set("n", "<leader>b", function()
   require("dap").toggle_breakpoint()
 end)
-vim.keymap.set("n", "F5", function()
+vim.keymap.set("n", "<F5>", function()
   require("dap").continue()
-end)
+end, { desc = "Continue debugging" })
 -- Debugger Setup using DAP
 local dap = require("dap")
 local dapui = require("dapui")
