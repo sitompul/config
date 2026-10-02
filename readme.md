@@ -1,5 +1,5 @@
 # Config
 
-My simple dotfiles and personal config.
+dotfiles duh 
 
 ## I'm using ~~Arch~~ ~~Fedora~~ Ubuntu BTW
